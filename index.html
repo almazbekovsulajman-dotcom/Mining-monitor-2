@@ -76,7 +76,7 @@ button{cursor:pointer;border:none;font-family:'Source Sans 3',sans-serif}
 .mrow{display:flex;align-items:center;gap:7px;font-size:11px;margin-bottom:6px}
 .mrow-name{color:rgba(255,255,255,.6);width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mrow-bar{flex:1;height:4px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden}
-.mrow-fill{height:100%;border-radius:2px}
+.mrow-fill{height:100%;border-radius:2px;transition:width 0.4s ease}
 .mrow-val{color:rgba(255,255,255,.85);width:28px;text-align:right;font-family:'Roboto Mono',monospace;font-size:10px}
 .mrow-st{font-size:8px;padding:1px 5px;border-radius:3px;font-weight:700;flex-shrink:0;color:#fff}
 
@@ -130,7 +130,7 @@ button{cursor:pointer;border:none;font-family:'Source Sans 3',sans-serif}
 
 /* PROGRESS */
 .pg-wrap{width:55px;height:4px;background:var(--dust2);border-radius:2px;overflow:hidden;display:inline-block;vertical-align:middle}
-.pg-fill{height:100%;border-radius:2px}
+.pg-fill{height:100%;border-radius:2px;transition:width 0.4s ease}
 .po{background:linear-gradient(90deg,#d4500a,#b84408)}
 .pgr{background:linear-gradient(90deg,#2d6a2d,#38a038)}
 .py{background:linear-gradient(90deg,#b8860b,#a07708)}
@@ -150,14 +150,15 @@ button{cursor:pointer;border:none;font-family:'Source Sans 3',sans-serif}
 .mc-sl{font-size:9px;color:var(--textl)}
 .mc-sv{font-size:10px;font-weight:700;font-family:'Roboto Mono',monospace}
 .mc-footer{display:flex;align-items:center;justify-content:space-between}
-.mc-st{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:700}
+.mc-st {display:flex;align-items:center;gap:4px;font-size:10px;font-weight:700}
 .mc-st::before{content:'●';font-size:7px}
 .sta{color:#38a038}.stw{color:#b8860b}.std{color:#c0392b}.sto{color:#94a3b8}
 .btn-det{padding:5px 11px;background:var(--ore);color:#fff;font-size:11px;font-weight:700;border-radius:4px;border:none;cursor:pointer;font-family:'Source Sans 3',sans-serif}
 .btn-det:hover{background:var(--ore2)}
 
 /* ALERTS */
-.ar{display:flex;gap:10px;padding:9px 11px;border-radius:8px;margin-bottom:7px;border-left:3px solid}
+.ar{display:flex;gap:10px;padding:9px 11px;border-radius:8px;margin-bottom:7px;border-left:3px solid;animation:alertIn 0.3s ease}
+@keyframes alertIn{from{transform:translateX(-10px);opacity:0}to{transform:translateX(0);opacity:1}}
 .ar.crit{background:#fef2f2;border-color:#c0392b}
 .ar.warn{background:#fffbeb;border-color:#b8860b}
 .ar.info{background:#eff6ff;border-color:#3b82f6}
@@ -270,7 +271,6 @@ button{cursor:pointer;border:none;font-family:'Source Sans 3',sans-serif}
 <body>
 <div class="site">
 
-<!-- HEADER -->
 <header class="header">
   <div class="htop"><div class="container"><div class="htop-inner">
     <span>📞 +996 (312) 54-32-10 &nbsp;|&nbsp; 📧 info@mining-monitor.kg &nbsp;|&nbsp; 📍 Бишкек, КГТУ им. Раззакова</span>
@@ -297,7 +297,6 @@ button{cursor:pointer;border:none;font-family:'Source Sans 3',sans-serif}
   </div></div>
 </header>
 
-<!-- HOME PAGE -->
 <div class="page active" id="page-home">
   <section class="hero">
     <div class="hero-bg"></div>
@@ -311,26 +310,14 @@ button{cursor:pointer;border:none;font-family:'Source Sans 3',sans-serif}
           <button class="btn-sec" onclick="showPage('monitoring')">Мониторинг</button>
         </div>
         <div class="hero-stats">
-          <div class="hstat"><div class="hstat-v">6</div><div class="hstat-l">Машин в парке</div></div>
+          <div class="hstat"><div class="hstat-v" id="homeStatCount">6</div><div class="hstat-l">Машин в парке</div></div>
           <div class="hstat"><div class="hstat-v">24/7</div><div class="hstat-l">Мониторинг</div></div>
-          <div class="hstat"><div class="hstat-v">79%</div><div class="hstat-l">Средний КПД</div></div>
+          <div class="hstat"><div class="hstat-v" id="homeStatKpi">79%</div><div class="hstat-l">Средний КПД</div></div>
         </div>
       </div>
       <div class="hero-visual">
-        <div class="hero-monitor">
-          <div class="hm-hdr">
-            <div class="hm-dot" style="background:#ff5f57"></div>
-            <div class="hm-dot" style="background:#febc2e"></div>
-            <div class="hm-dot" style="background:#28c840"></div>
-            <div class="hm-title">Мониторинг машин</div>
-            <div class="hm-live"><div class="hm-live-d"></div>Live</div>
+        <div class="hero-monitor" id="heroLiveMonitorList">
           </div>
-          <div class="mrow"><div class="mrow-name">⛏ EX-001</div><div class="mrow-bar"><div class="mrow-fill" style="width:94%;background:#d4500a"></div></div><div class="mrow-val">94%</div><div class="mrow-st" style="background:rgba(45,106,45,.3);color:#4ade80">В работе</div></div>
-          <div class="mrow"><div class="mrow-name">🚛 DT-002</div><div class="mrow-bar"><div class="mrow-fill" style="width:88%;background:#d4500a"></div></div><div class="mrow-val">88%</div><div class="mrow-st" style="background:rgba(45,106,45,.3);color:#4ade80">В работе</div></div>
-          <div class="mrow"><div class="mrow-name">🔩 DR-003</div><div class="mrow-bar"><div class="mrow-fill" style="width:61%;background:#f97316"></div></div><div class="mrow-val">61%</div><div class="mrow-st" style="background:rgba(212,80,10,.3);color:#fb923c">Внимание</div></div>
-          <div class="mrow"><div class="mrow-name">🚛 DT-004</div><div class="mrow-bar"><div class="mrow-fill" style="width:91%;background:#d4500a"></div></div><div class="mrow-val">91%</div><div class="mrow-st" style="background:rgba(45,106,45,.3);color:#4ade80">В работе</div></div>
-          <div class="mrow"><div class="mrow-name">🏗 CR-006</div><div class="mrow-bar"><div class="mrow-fill" style="width:42%;background:#ef4444"></div></div><div class="mrow-val">42%</div><div class="mrow-st" style="background:rgba(192,57,43,.3);color:#f87171">Критично</div></div>
-        </div>
       </div>
     </div></div>
   </section>
@@ -365,7 +352,7 @@ button{cursor:pointer;border:none;font-family:'Source Sans 3',sans-serif}
           </div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px">
-          <div style="background:rgba(255,255,255,.05);border-radius:9px;padding:13px"><div style="font-size:20px;margin-bottom:6px">📊</div><div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:3px">Мониторинг в реальном времени</div><div style="font-size:10px;color:rgba(255,255,255,.32);line-height:1.5">Контроль датчиков каждые 5 секунд</div></div>
+          <div style="background:rgba(255,255,255,.05);border-radius:9px;padding:13px"><div style="font-size:20px;margin-bottom:6px">📊</div><div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:3px">Мониторинг в реальном времени</div><div style="font-size:10px;color:rgba(255,255,255,.32);line-height:1.5">Контроль датчиков каждые 4 секунды</div></div>
           <div style="background:rgba(255,255,255,.05);border-radius:9px;padding:13px"><div style="font-size:20px;margin-bottom:6px">⚠</div><div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:3px">Система оповещений</div><div style="font-size:10px;color:rgba(255,255,255,.32);line-height:1.5">Автоматические тревоги при отклонениях</div></div>
           <div style="background:rgba(255,255,255,.05);border-radius:9px;padding:13px"><div style="font-size:20px;margin-bottom:6px">📈</div><div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:3px">Аналитика данных</div><div style="font-size:10px;color:rgba(255,255,255,.32);line-height:1.5">Графики производительности и трендов</div></div>
           <div style="background:rgba(255,255,255,.05);border-radius:9px;padding:13px"><div style="font-size:20px;margin-bottom:6px">🛡</div><div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:3px">Панель администратора</div><div style="font-size:10px;color:rgba(255,255,255,.32);line-height:1.5">Управление машинами и пользователями</div></div>
@@ -375,7 +362,6 @@ button{cursor:pointer;border:none;font-family:'Source Sans 3',sans-serif}
   </section>
 </div>
 
-<!-- CATALOG PAGE -->
 <div class="page" id="page-catalog">
   <div class="section"><div class="container">
     <div id="catalogDetail" class="hidden">
@@ -390,7 +376,6 @@ button{cursor:pointer;border:none;font-family:'Source Sans 3',sans-serif}
   </div></div>
 </div>
 
-<!-- MONITORING PAGE -->
 <div class="page" id="page-monitoring">
   <div class="section"><div class="container">
     <div class="sh"><div class="stag">Мониторинг</div><h2>Система мониторинга горных машин</h2><p>Контроль состояния техники в реальном времени</p></div>
@@ -402,8 +387,8 @@ button{cursor:pointer;border:none;font-family:'Source Sans 3',sans-serif}
           <svg class="chart-svg" id="perfChart" viewBox="0 0 600 160" preserveAspectRatio="none"></svg>
         </div>
         <div style="display:flex;gap:16px;justify-content:center;margin-top:8px">
-          <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--textl)"><div style="width:12px;height:3px;background:#d4500a;border-radius:2px"></div>Экскаватор</div>
-          <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--textl)"><div style="width:12px;height:3px;background:#2d6a2d;border-radius:2px"></div>Самосвал</div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--textl)"><div style="width:12px;height:3px;background:#d4500a;border-radius:2px"></div>Экскаваторы</div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--textl)"><div style="width:12px;height:3px;background:#2d6a2d;border-radius:2px"></div>Самосвалы</div>
         </div>
       </div>
       <div class="card">
@@ -418,7 +403,6 @@ button{cursor:pointer;border:none;font-family:'Source Sans 3',sans-serif}
   </div></div>
 </div>
 
-<!-- ALERTS PAGE -->
 <div class="page" id="page-alerts">
   <div class="section"><div class="container">
     <div class="sh"><div class="stag">Оповещения</div><h2>Система оповещений</h2><p>Критические события и предупреждения в реальном времени</p></div>
@@ -427,7 +411,6 @@ button{cursor:pointer;border:none;font-family:'Source Sans 3',sans-serif}
   </div></div>
 </div>
 
-<!-- ARTICLES PAGE -->
 <div class="page" id="page-articles">
   <div class="section"><div class="container">
     <div class="sh"><div class="stag">Статьи</div><h2>Публикации и обзоры</h2><p>Технические статьи о горном оборудовании, системах мониторинга и автоматизации</p></div>
@@ -435,7 +418,6 @@ button{cursor:pointer;border:none;font-family:'Source Sans 3',sans-serif}
   </div></div>
 </div>
 
-<!-- ABOUT PAGE -->
 <div class="page" id="page-about">
   <div class="section"><div class="container" style="max-width:800px">
     <div class="sh"><div class="stag">О системе</div><h2>Информационная система мониторинга горных машин</h2></div>
@@ -460,7 +442,6 @@ button{cursor:pointer;border:none;font-family:'Source Sans 3',sans-serif}
   </div></div>
 </div>
 
-<!-- ADMIN PAGE -->
 <div class="page" id="page-admin">
   <div class="section"><div class="container">
     <div class="sh">
@@ -479,7 +460,6 @@ button{cursor:pointer;border:none;font-family:'Source Sans 3',sans-serif}
   </div></div>
 </div>
 
-<!-- PROFILE PAGE -->
 <div class="page" id="page-profile">
   <div class="section"><div style="max-width:880px;margin:0 auto;padding:0 20px">
     <div class="uh">
@@ -496,7 +476,6 @@ button{cursor:pointer;border:none;font-family:'Source Sans 3',sans-serif}
   </div></div>
 </div>
 
-<!-- FOOTER -->
 <footer class="footer">
   <div class="container">
     <div class="footer-main">
@@ -524,7 +503,6 @@ button{cursor:pointer;border:none;font-family:'Source Sans 3',sans-serif}
   </div>
 </footer>
 
-<!-- MODAL -->
 <div class="overlay hidden" id="modal" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <div class="mhdr"><div class="mttl" id="modalTitle">Вход</div><button class="mclose" onclick="closeModal()">✕</button></div>
@@ -536,43 +514,34 @@ button{cursor:pointer;border:none;font-family:'Source Sans 3',sans-serif}
       <div id="authFields"></div>
       <button class="btn-sub" onclick="doAuth()">Войти</button>
       <div class="fnote" id="authNote"></div>
-      <div class="demo-box"><b>Демо:</b> Введите любой email и пароль. При регистрации выберите роль «Администратор» для полного доступа.</div>
+      <div class="demo-box"><b>Для защиты диплома (Суперпользователь):</b><br>Логин: <code style="color:var(--ore);font-weight:700">admin</code><br>Пароль: <code style="color:var(--ore);font-weight:700">admin123</code><br>(Вход с полными интерактивными правами Администратора).</div>
     </div>
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast hidden" id="toast"></div>
 
-</div><!-- .site -->
-
-<script>
+</div><script>
 // ── DATA ──────────────────────────────────────────────
 const MACHINES = [
   {id:"EX-001",name:"Экскаватор ЭКГ-8И",ico:"⛏",bg:"#e8f0e8",cat:"Экскаватор",st:"active",load:78,temp:82,fuel:65,hr:4521,prod:94,power:"630 кВт",weight:"360 т",desc:"Карьерный электрический экскаватор с ковшом 8 м³. Применяется на открытых горных работах в карьерах угля и руды.",loc:"Карьер Северный",year:2018,badge:"В работе"},
   {id:"DT-002",name:"Самосвал БелАЗ-75131",ico:"🚛",bg:"#e8eaf0",cat:"Самосвал",st:"active",load:91,temp:79,fuel:48,hr:3102,prod:88,power:"1715 кВт",weight:"130 т",desc:"Карьерный самосвал грузоподъёмностью 130 т для транспортировки горной массы.",loc:"Карьер Южный",year:2019,badge:"В работе"},
-  {id:"DR-003",name:"Буровая СБШ-250",ico:"🔩",bg:"#ede8e8",cat:"Буровая",st:"warning",load:55,temp:96,fuel:72,hr:2841,prod:61,power:"500 кВт",weight:"75 т",desc:"Самоходный буровой станок для взрывного бурения скважин диаметром 250 мм.",loc:"Участок Б-3",year:2017,badge:"ТО"},
+  {id:"DR-003",name:"Буровая СБШ-250",ico:"🔩",bg:"#ede8e8",cat:"Буровая",st:"warning",load:55,temp:88,fuel:72,hr:2841,prod:61,power:"500 кВт",weight:"75 т",desc:"Самоходный буровой станок для взрывного бурения скважин диаметром 250 мм.",loc:"Участок Б-3",year:2017,badge:"В работе"},
   {id:"DT-004",name:"Самосвал БелАЗ-75306",ico:"🚛",bg:"#e8eaf0",cat:"Самосвал",st:"active",load:83,temp:74,fuel:81,hr:1990,prod:91,power:"895 кВт",weight:"90 т",desc:"Карьерный самосвал грузоподъёмностью 90 т с механической трансмиссией.",loc:"Карьер Северный",year:2020,badge:"В работе"},
-  {id:"BL-005",name:"Бульдозер Т-500",ico:"🏗",bg:"#f0f0e8",cat:"Бульдозер",st:"offline",load:0,temp:22,fuel:95,hr:5234,prod:0,power:"368 кВт",weight:"51 т",desc:"Тяжёлый промышленный бульдозер для горно-строительных и рекультивационных работ.",loc:"Ремонтная зона",year:2016,badge:"ТО плановое"},
-  {id:"CR-006",name:"Кран горный ГК-50",ico:"🏗",bg:"#ede8e8",cat:"Кран",st:"danger",load:44,temp:112,fuel:33,hr:6102,prod:42,power:"280 кВт",weight:"95 т",desc:"Специализированный горный кран грузоподъёмностью 50 т для монтажных работ.",loc:"Участок А-1",year:2014,badge:"Аварийный"},
+  {id:"BL-005",name:"Бульдозер Т-500",ico:"🚜",bg:"#f0f0e8",cat:"Бульдозер",st:"offline",load:0,temp:22,fuel:95,hr:5234,prod:0,power:"368 кВт",weight:"51 т",desc:"Тяжёлый промышленный бульдозер для горно-строительных и рекультивационных работ.",loc:"Ремонтная зона",year:2016,badge:"Ремонт"},
+  {id:"CR-006",name:"Кран горный ГК-50",ico:"🏗",bg:"#ede8e8",cat:"Кран",st:"danger",load:44,temp:94,fuel:33,hr:6102,prod:42,power:"280 кВт",weight:"95 т",desc:"Специализированный горный кран грузоподъёмностью 50 т для монтажных работ.",loc:"Участок А-1",year:2014,badge:"Аварийный"},
 ];
 
-const ALERTS = [
-  {type:"crit",ico:"🔴",machine:"CR-006",msg:"Критическая температура: 112°C (лимит 90°C)",time:"14:32",cat:"Температура"},
-  {type:"crit",ico:"🔴",machine:"CR-006",msg:"Аварийный уровень вибрации: 6.2 мм/с",time:"14:28",cat:"Вибрация"},
-  {type:"warn",ico:"🟡",machine:"DR-003",msg:"Повышенная температура: 96°C — рекомендовано ТО",time:"13:15",cat:"Температура"},
-  {type:"warn",ico:"🟡",machine:"DR-003",msg:"Вибрация выше нормы: 4.7 мм/с",time:"12:50",cat:"Вибрация"},
-  {type:"info",ico:"🔵",machine:"DT-002",msg:"Низкий уровень топлива: 48%",time:"11:20",cat:"Топливо"},
-  {type:"info",ico:"🔵",machine:"BL-005",msg:"Машина переведена в плановое ТО",time:"09:00",cat:"Статус"},
+let ALERTS = [
+  {type:"crit",ico:"🔴",machine:"CR-006",msg:"Критическая температура узлов: выше нормы!",time:"17:01",cat:"Температура"},
+  {type:"warn",ico:"🟡",machine:"DR-003",msg:"Повышенная температура: рекомендована диагностика",time:"16:44",cat:"Температура"},
+  {type:"info",ico:"🔵",machine:"DT-002",msg:"Низкий уровень топлива в баке: 48%",time:"15:20",cat:"Топливо"},
 ];
 
 const ARTICLES = [
   {ico:"⛏",bg:"#e8f0e8",cat:"Технологии",title:"Системы мониторинга горного оборудования: принципы работы",desc:"Обзор современных IoT-систем мониторинга для карьерной техники и аналитики в реальном времени.",date:"10 июня 2026",read:"8 мин"},
   {ico:"🚛",bg:"#e8eaf0",cat:"Техника",title:"БелАЗ нового поколения: электрические самосвалы будущего",desc:"Сравнительный анализ дизельных и электрических карьерных самосвалов.",date:"5 июня 2026",read:"6 мин"},
   {ico:"📊",bg:"#f0ede8",cat:"Аналитика",title:"Предиктивная аналитика: как ИИ предсказывает поломки машин",desc:"Применение машинного обучения для прогнозирования технических отказов.",date:"1 июня 2026",read:"10 мин"},
-  {ico:"🔩",bg:"#ede8e8",cat:"ТО",title:"Регламентное обслуживание буровых установок: чек-лист",desc:"Практическое руководство по ТО станков вращательного бурения.",date:"28 мая 2026",read:"7 мин"},
-  {ico:"🌿",bg:"#e8f0e8",cat:"Экология",title:"Экологический мониторинг карьеров: пылеподавление",desc:"Современные технологии снижения экологического воздействия горных работ.",date:"24 мая 2026",read:"9 мин"},
-  {ico:"⚡",bg:"#f0f0e8",cat:"Энергетика",title:"Оптимизация энергопотребления горных предприятий",desc:"Методы снижения энергозатрат при добыче полезных ископаемых.",date:"20 мая 2026",read:"11 мин"},
 ];
 
 // ── STATE ──────────────────────────────────────────────
@@ -612,7 +581,8 @@ function progHtml(val, cls) {
 }
 
 function tempColor(t) {
-  return t>100?'#c0392b':t>85?'#b8860b':'#2d6a2d';
+  const limit = parseFloat(thresholds.temp) || 90;
+  return t > limit + 10 ? '#c0392b' : t > limit ? '#b8860b' : '#2d6a2d';
 }
 
 // ── NAVIGATION ─────────────────────────────────────────
@@ -623,6 +593,7 @@ function showPage(id) {
     a.classList.toggle('on', a.dataset.page===id);
   });
   window.scrollTo(0,0);
+  if(id==='home') renderHome();
   if(id==='monitoring') renderMonitoring();
   if(id==='catalog') renderCatalog();
   if(id==='alerts') renderAlerts();
@@ -660,7 +631,7 @@ function machineCardHtml(m, onclick='') {
 
 function articlesHtml(arr) {
   return arr.map(a=>`
-  <div class="art" onclick="notify('Открываю: ${a.title.substring(0,30)}...')">
+  <div class="art" onclick="notify('Открываю статью: ${a.title.substring(0,25)}...')">
     <div class="art-img" style="background:${a.bg}"><span>${a.ico}</span></div>
     <div class="art-body">
       <div class="art-cat">${a.cat}</div>
@@ -675,6 +646,40 @@ function articlesHtml(arr) {
 function renderHome() {
   document.getElementById('homeCatalog').innerHTML = machines.slice(0,3).map(m=>machineCardHtml(m,`showMachineFromHome('${m.id}')`)).join('');
   document.getElementById('homeArticles').innerHTML = articlesHtml(ARTICLES.slice(0,3));
+  document.getElementById('homeStatCount').textContent = machines.length;
+  
+  const filtered = machines.filter(m=>m.st!=='offline');
+  const avgKpi = filtered.length ? Math.round(filtered.reduce((s,m)=>s+m.prod,0)/filtered.length) : 0;
+  document.getElementById('homeStatKpi').textContent = avgKpi + '%';
+
+  renderHeroLiveMonitor();
+}
+
+function renderHeroLiveMonitor() {
+  const el = document.getElementById('heroLiveMonitorList');
+  if(!el) return;
+  
+  let html = `
+    <div class="hm-hdr">
+      <div class="hm-dot" style="background:#ff5f57"></div>
+      <div class="hm-dot" style="background:#febc2e"></div>
+      <div class="hm-dot" style="background:#28c840"></div>
+      <div class="hm-title">Панель Телеметрии парка</div>
+      <div class="hm-live"><div class="hm-live-d"></div>Live</div>
+    </div>`;
+    
+  machines.slice(0, 5).forEach(m => {
+    let fillStyle = m.st==='danger'?'#ef4444':m.st==='warning'?'#f97316':'#d4500a';
+    let labelStyle = m.st==='danger'?'background:rgba(192,57,43,.3);color:#f87171':m.st==='warning'?'background:rgba(212,80,10,.3);color:#fb923c':'background:rgba(45,106,45,.3);color:#4ade80';
+    html += `
+      <div class="mrow">
+        <div class="mrow-name">${m.ico} ${m.id}</div>
+        <div class="mrow-bar"><div class="mrow-fill" style="width:${m.load}%;background:${fillStyle}"></div></div>
+        <div class="mrow-val">${m.load}%</div>
+        <div class="mrow-st" style="${labelStyle}">${SL[m.st]}</div>
+      </div>`;
+  });
+  el.innerHTML = html;
 }
 
 function showMachineFromHome(id) {
@@ -684,7 +689,7 @@ function showMachineFromHome(id) {
 
 // ── CATALOG ─────────────────────────────────────────────
 function renderCatalog() {
-  const cats = ['Все', ...new Set(MACHINES.map(m=>m.cat))];
+  const cats = ['Все', ...new Set(machines.map(m=>m.cat))];
   document.getElementById('catFilters').innerHTML = cats.map(c=>`
     <button onclick="setCatFilter('${c}')" style="padding:5px 13px;background:${catFilter===c?'var(--ore)':'#fff'};border:1.5px solid ${catFilter===c?'var(--ore)':'var(--dust3)'};color:${catFilter===c?'#fff':'var(--textm)'};font-size:12px;font-weight:600;border-radius:20px;cursor:pointer;transition:all .15s">${c}</button>
   `).join('');
@@ -702,7 +707,7 @@ function showMachineDetail(id) {
   if(!m) return;
   document.getElementById('catalogMain').classList.add('hidden');
   document.getElementById('catalogDetail').classList.remove('hidden');
-  const warn = m.st==='danger' ? `<div style="padding:9px 12px;background:#fffbeb;border:1px solid #fde68a;border-radius:7px;font-size:12px;color:#92400e;margin-bottom:12px">⚠ Критическая температура ${m.temp}°C. Требуется немедленное ТО.</div>` : m.st==='warning' ? `<div style="padding:9px 12px;background:#fffbeb;border:1px solid #fde68a;border-radius:7px;font-size:12px;color:#92400e;margin-bottom:12px">⚠ Повышенная температура ${m.temp}°C. Рекомендуется диагностика.</div>` : '';
+  const warn = m.st==='danger' ? `<div style="padding:9px 12px;background:#fef2f2;border:1px solid #fecaca;border-radius:7px;font-size:12px;color:#dc2626;margin-bottom:12px">⚠ КРИТИЧЕСКИЙ СБОЙ: Температура достигла ${m.temp}°C. Превышен лимит администратора (${thresholds.temp}°C)!</div>` : m.st==='warning' ? `<div style="padding:9px 12px;background:#fffbeb;border:1px solid #fde68a;border-radius:7px;font-size:12px;color:#92400e;margin-bottom:12px">⚠ ВНИМАНИЕ: Повышенная температура ${m.temp}°C. Рекомендуется технический осмотр.</div>` : '';
   document.getElementById('detailContent').innerHTML = `
   <div class="g2">
     <div class="cw">
@@ -711,7 +716,7 @@ function showMachineDetail(id) {
       <div style="font-family:'Oswald',sans-serif;font-size:20px;font-weight:700;margin-bottom:6px">${m.name}</div>
       <div style="font-size:13px;color:var(--textl);line-height:1.6;margin-bottom:12px">${m.desc}</div>
       <div style="background:var(--dust);border-radius:7px;padding:11px">
-        ${[['Локация',m.loc],['Год ввода',m.year],['Моточасы',m.hr.toLocaleString()+' ч'],['КПД',m.prod+'%'],['Мощность',m.power],['Масса',m.weight]].map(([l,v])=>`
+        ${[['Идентификатор системный',m.id],['Текущая Локация',m.loc],['Год ввода в эксплуатацию',m.year],['Общие Моточасы',m.hr.toLocaleString()+' ч'],['Фактический КПД',m.prod+'%'],['Двигатель / Мощность',m.power],['Конструктивная Масса',m.weight]].map(([l,v])=>`
           <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--dust3);font-size:12px">
             <span style="color:var(--textl)">${l}</span><span style="font-weight:700;font-family:'Roboto Mono',monospace;font-size:11px">${v}</span>
           </div>`).join('')}
@@ -719,8 +724,8 @@ function showMachineDetail(id) {
     </div>
     <div>
       <div class="cw" style="margin-bottom:12px">
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:11px">Параметры в реальном времени</div>
-        ${[['Нагрузка',m.load,'%',m.load>80?'po':m.load>50?'pgr':'py'],['Температура',m.temp,'°C',m.temp>100?'pr':m.temp>85?'py':'pgr'],['Топливо',m.fuel,'%',m.fuel<30?'pr':m.fuel<60?'py':'pgr'],['КПД',m.prod,'%',m.prod>80?'pgr':m.prod>50?'py':'pr']].map(([l,v,u,cls])=>`
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:11px">Потоковые датчики телеметрии</div>
+        ${[['Рабочая Нагрузка',m.load,'%',m.load>85?'po':m.load>50?'pgr':'py'],['Температура двигателя',m.temp,'°C',m.temp>parseFloat(thresholds.temp)+10?'pr':m.temp>parseFloat(thresholds.temp)?'py':'pgr'],['Остаток топлива в баке',m.fuel,'%',m.fuel<parseFloat(thresholds.fuel)?'pr':m.fuel<60?'py':'pgr'],['Коэффициент произв.',m.prod,'%',m.prod>80?'pgr':m.prod>50?'py':'pr']].map(([l,v,u,cls])=>`
           <div style="margin-bottom:10px">
             <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:12px">
               <span style="color:var(--textm)">${l}</span><span style="font-family:'Roboto Mono',monospace;font-weight:700">${v}${u}</span>
@@ -730,7 +735,7 @@ function showMachineDetail(id) {
       </div>
       ${warn}
       <div class="cw">
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:11px">История нагрузки (6 мес.)</div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:11px">Гистограмма стабильности КПД за 6 мес.</div>
         ${svgLineChart([72,78,74,81,83,m.prod],'#d4500a',['Янв','Фев','Мар','Апр','Май','Июн'])}
       </div>
     </div>
@@ -764,56 +769,43 @@ function svgLineChart(data, color, labels) {
   </svg>`;
 }
 
-function svgBarChart(data, colors, labels) {
-  const w=540, h=140, pad=30, bh=h-pad*1.5;
-  const max=Math.max(...data)*1.1||100;
-  const bw = (w-pad*2)/data.length*0.6;
-  const gap = (w-pad*2)/data.length;
-  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:140px">
-    ${data.map((v,i)=>{
-      const x=pad+i*gap+(gap-bw)/2, bh2=((v/max)*(h-pad*1.5)), y=h-14-bh2;
-      return `<rect x="${x}" y="${y}" width="${bw}" height="${bh2}" rx="3" fill="${colors[i]||'#d4500a'}"/>
-      <text x="${x+bw/2}" y="${h-1}" text-anchor="middle" font-size="10" fill="#aaa" font-family="Source Sans 3,sans-serif">${labels[i]||''}</text>
-      <text x="${x+bw/2}" y="${y-3}" text-anchor="middle" font-size="10" fill="#666" font-family="Roboto Mono,monospace">${v}</text>`;
-    }).join('')}
-    <line x1="${pad}" y1="${h-14}" x2="${w-pad}" y2="${h-14}" stroke="#e2e0da" stroke-width="1"/>
-  </svg>`;
-}
-
 // ── MONITORING ──────────────────────────────────────────
 function renderMonitoring() {
   const actC = machines.filter(m=>m.st==='active').length;
   const wrnC = machines.filter(m=>m.st==='warning'||m.st==='danger').length;
-  const avgP = Math.round(machines.filter(m=>m.st!=='offline').reduce((s,m)=>s+m.prod,0)/Math.max(machines.filter(m=>m.st!=='offline').length,1));
+  const filtered = machines.filter(m=>m.st!=='offline');
+  const avgP = filtered.length ? Math.round(filtered.reduce((s,m)=>s+m.prod,0)/filtered.length) : 0;
 
   document.getElementById('monKpis').innerHTML = [
-    {l:'Активных машин',v:actC,s:`из ${machines.length} в парке`,c:'#d4500a',tr:'up'},
-    {l:'Требуют внимания',v:wrnC,s:'нужна диагностика',c:'#c0392b',tr:'dn'},
-    {l:'Средний КПД',v:avgP+'%',s:'+3% за неделю',c:'#2d6a2d',tr:'up'},
-    {l:'Моточасов',v:'23 790',s:'за всё время',c:'#b8860b',tr:'up'},
+    {l:'Активно на линиях',v:actC,s:`из ${machines.length} в парке`,c:'#d4500a',tr:'up'},
+    {l:'Критические алармы',v:wrnC,s:'требуется проверка',c:'#c0392b',tr:wrnC>0?'dn':'up'},
+    {l:'Средний КПД парка',v:avgP+'%',s:'Динамический расчет',c:'#2d6a2d',tr:'up'},
+    {l:'Суммарные Моточасы',v:'23 840 ч',s:'Общий моторесурс',c:'#b8860b',tr:'up'},
   ].map(k=>`<div class="kpi"><div class="kpi-bar" style="background:${k.c}"></div><div class="kpi-l">${k.l}</div><div class="kpi-v">${k.v}</div><div class="kpi-s"><span class="${k.tr}">${k.tr==='up'?'↑':'↓'}</span> ${k.s}</div></div>`).join('');
 
   // Performance chart
   const chartEl = document.getElementById('perfChart');
-  const d1=[74,78,72,82,80,94], d2=[80,85,82,88,86,91];
-  const w=600,h=160,pad=35,bh=h-pad*1.5,max=100,min=60;
-  const pts1=d1.map((v,i)=>[pad+i*(w-pad*2)/5, pad+(1-(v-min)/(max-min))*bh]);
-  const pts2=d2.map((v,i)=>[pad+i*(w-pad*2)/5, pad+(1-(v-min)/(max-min))*bh]);
-  const lbls=['Янв','Фев','Мар','Апр','Май','Июн'];
-  chartEl.innerHTML = `
-    <defs>
-      <linearGradient id="cg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#d4500a" stop-opacity=".2"/><stop offset="100%" stop-color="#d4500a" stop-opacity=".02"/></linearGradient>
-      <linearGradient id="cg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2d6a2d" stop-opacity=".15"/><stop offset="100%" stop-color="#2d6a2d" stop-opacity=".02"/></linearGradient>
-    </defs>
-    <polygon points="${pts1[0][0]},${h-10} ${pts1.map(p=>p.join(',')).join(' ')} ${pts1[5][0]},${h-10}" fill="url(#cg1)"/>
-    <polygon points="${pts2[0][0]},${h-10} ${pts2.map(p=>p.join(',')).join(' ')} ${pts2[5][0]},${h-10}" fill="url(#cg2)"/>
-    <polyline points="${pts1.map(p=>p.join(',')).join(' ')}" fill="none" stroke="#d4500a" stroke-width="2.5" stroke-linejoin="round"/>
-    <polyline points="${pts2.map(p=>p.join(',')).join(' ')}" fill="none" stroke="#2d6a2d" stroke-width="2.5" stroke-linejoin="round"/>
-    ${pts1.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="#d4500a"/>`).join('')}
-    ${pts2.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="#2d6a2d"/>`).join('')}
-    ${lbls.map((l,i)=>{const x=pad+i*(w-pad*2)/5;return `<text x="${x}" y="${h-1}" text-anchor="middle" font-size="11" fill="#aaa" font-family="Source Sans 3,sans-serif">${l}</text>`}).join('')}
-    <line x1="${pad}" y1="${h-14}" x2="${w-pad}" y2="${h-14}" stroke="#e2e0da" stroke-width="1"/>
-  `;
+  if(chartEl) {
+    const d1=[74,78,72,82,80,avgP], d2=[80,85,82,88,86,Math.max(avgP-4,70)];
+    const w=600,h=160,pad=35,bh=h-pad*1.5,max=100,min=60;
+    const pts1=d1.map((v,i)=>[pad+i*(w-pad*2)/5, pad+(1-(v-min)/(max-min))*bh]);
+    const pts2=d2.map((v,i)=>[pad+i*(w-pad*2)/5, pad+(1-(v-min)/(max-min))*bh]);
+    const lbls=['Янв','Фев','Мар','Апр','Май','Июн'];
+    chartEl.innerHTML = `
+      <defs>
+        <linearGradient id="cg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#d4500a" stop-opacity=".2"/><stop offset="100%" stop-color="#d4500a" stop-opacity=".02"/></linearGradient>
+        <linearGradient id="cg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2d6a2d" stop-opacity=".15"/><stop offset="100%" stop-color="#2d6a2d" stop-opacity=".02"/></linearGradient>
+      </defs>
+      <polygon points="${pts1[0][0]},${h-10} ${pts1.map(p=>p.join(',')).join(' ')} ${pts1[5][0]},${h-10}" fill="url(#cg1)"/>
+      <polygon points="${pts2[0][0]},${h-10} ${pts2.map(p=>p.join(',')).join(' ')} ${pts2[5][0]},${h-10}" fill="url(#cg2)"/>
+      <polyline points="${pts1.map(p=>p.join(',')).join(' ')}" fill="none" stroke="#d4500a" stroke-width="2.5" stroke-linejoin="round"/>
+      <polyline points="${pts2.map(p=>p.join(',')).join(' ')}" fill="none" stroke="#2d6a2d" stroke-width="2.5" stroke-linejoin="round"/>
+      ${pts1.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="#d4500a"/>`).join('')}
+      ${pts2.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="#2d6a2d"/>`).join('')}
+      ${lbls.map((l,i)=>{const x=pad+i*(w-pad*2)/5;return `<text x="${x}" y="${h-1}" text-anchor="middle" font-size="11" fill="#aaa" font-family="Source Sans 3,sans-serif">${l}</text>`}).join('')}
+      <line x1="${pad}" y1="${h-14}" x2="${w-pad}" y2="${h-14}" stroke="#e2e0da" stroke-width="1"/>
+    `;
+  }
 
   document.getElementById('monAlerts').innerHTML = ALERTS.slice(0,4).map(a=>`
     <div class="ar ${a.type}">
@@ -823,7 +815,7 @@ function renderMonitoring() {
 
   document.getElementById('monTable').innerHTML = `
     <thead><tr>
-      <th>Машина</th><th>Статус</th><th>Нагрузка</th><th>Темп.</th><th>Топливо</th><th>КПД</th><th>Мотч.</th><th>Локация</th>
+      <th>Машина</th><th>Статус тех.</th><th>Нагрузка</th><th>Датчик Темп.</th><th>Топливо</th><th>КПД</th><th>Мотч.</th><th>Локация</th>
     </tr></thead>
     <tbody>${machines.map(m=>`
     <tr onclick="showMachineFromHome('${m.id}')">
@@ -831,7 +823,7 @@ function renderMonitoring() {
       <td>${badgeHtml(m.st)}</td>
       <td><div style="display:flex;align-items:center;gap:6px">${progHtml(m.load, m.load>80?'po':m.load>50?'pgr':'py')}<span style="font-size:11px;font-family:'Roboto Mono',monospace">${m.load}%</span></div></td>
       <td><span style="color:${tempColor(m.temp)};font-weight:700;font-family:'Roboto Mono',monospace">${m.temp}°C</span></td>
-      <td><span style="font-family:'Roboto Mono',monospace;font-size:11px">${m.fuel}%</span></td>
+      <td><span style="font-family:'Roboto Mono',monospace;font-size:11px;color:${m.fuel<parseFloat(thresholds.fuel)?'var(--red)':'var(--text)'}">${m.fuel}%</span></td>
       <td><span style="font-weight:700;font-family:'Roboto Mono',monospace">${m.prod}%</span></td>
       <td style="font-size:11px;font-family:'Roboto Mono',monospace;color:var(--textl)">${m.hr.toLocaleString()}</td>
       <td style="font-size:11px;color:var(--textl)">${m.loc}</td>
@@ -844,10 +836,10 @@ function renderAlerts() {
   const warn=ALERTS.filter(a=>a.type==='warn').length;
   const info=ALERTS.filter(a=>a.type==='info').length;
   document.getElementById('alertKpis').innerHTML = [
-    {l:'Критических',v:crit,c:'#c0392b'},{l:'Предупреждений',v:warn,c:'#d4500a'},{l:'Информационных',v:info,c:'#3b82f6'}
+    {l:'Критических Алармов',v:crit,c:'#c0392b'},{l:'Предупреждений системы',v:warn,c:'#d4500a'},{l:'Информационных логов',v:info,c:'#3b82f6'}
   ].map(k=>`<div class="kpi"><div class="kpi-bar" style="background:${k.c}"></div><div class="kpi-l">${k.l}</div><div class="kpi-v" style="color:${k.c}">${k.v}</div></div>`).join('');
 
-  document.getElementById('alertsList').innerHTML = '<div class="ch"><div class="ct">Все оповещения</div></div>' +
+  document.getElementById('alertsList').innerHTML = '<div class="ch"><div class="ct">Журнал системных оповещений (Потоковый логинг)</div></div>' +
     ALERTS.map(a=>`
     <div class="ar ${a.type}">
       <div style="font-size:14px;flex-shrink:0">${a.ico}</div>
@@ -856,7 +848,7 @@ function renderAlerts() {
           <div class="ar-t">${a.msg}</div>
           <span class="badge ${a.type==='crit'?'bd':a.type==='warn'?'bw':'ba'}" style="flex-shrink:0;font-size:9px">${a.type==='crit'?'КРИТИЧНО':a.type==='warn'?'ВНИМАНИЕ':'ИНФО'}</span>
         </div>
-        <div class="ar-m">${a.machine} · ${a.cat} · Сегодня ${a.time}</div>
+        <div class="ar-m">ID узла: ${a.machine} · Категория: ${a.cat} · Лог зарегистрирован в: ${a.time}</div>
       </div>
     </div>`).join('');
 }
@@ -864,9 +856,9 @@ function renderAlerts() {
 // ── ADMIN ───────────────────────────────────────────────
 function renderAdmin() {
   document.getElementById('adminKpis').innerHTML = [
-    {l:'Машин в парке',v:machines.length,c:'#d4500a'},
-    {l:'Пользователей',v:users.length,c:'#2d6a2d'},
-    {l:'Критических тревог',v:machines.filter(m=>m.st==='danger').length,c:'#c0392b'},
+    {l:'Всего горных машин',v:machines.length,c:'#d4500a'},
+    {l:'Зарегистрировано лиц',v:users.length,c:'#2d6a2d'},
+    {l:'Аварийных статусов',v:machines.filter(m=>m.st==='danger').length,c:'#c0392b'},
   ].map(k=>`<div class="adm-stat" style="border-left-color:${k.c}"><div class="adm-sl">${k.l}</div><div class="adm-sv" style="color:${k.c}">${k.v}</div></div>`).join('');
   renderAdminTab(currentAdminTab);
 }
@@ -883,26 +875,26 @@ function renderAdminTab(tab) {
   if(tab==='machines') {
     el.innerHTML = `<div class="g2">
       <div class="card">
-        <div class="ch"><div class="ct">Добавить машину</div></div>
+        <div class="ch"><div class="ct">Зарегистрировать горную машину (Ввод в БД)</div></div>
         <div class="fgrid">
-          <div class="fg"><label class="fl">ID *</label><input class="fi" id="mfId" placeholder="EX-007"/></div>
-          <div class="fg"><label class="fl">Тип</label><select class="fs" id="mfCat">${['Экскаватор','Самосвал','Буровая','Бульдозер','Кран'].map(t=>`<option>${t}</option>`).join('')}</select></div>
-          <div class="fg ffull"><label class="fl">Название *</label><input class="fi" id="mfName" placeholder="Экскаватор ЭКГ-12И"/></div>
-          <div class="fg"><label class="fl">Статус</label><select class="fs" id="mfSt"><option value="active">Активна</option><option value="offline">Откл.</option></select></div>
-          <div class="fg"><label class="fl">Локация</label><input class="fi" id="mfLoc" placeholder="Карьер Северный"/></div>
+          <div class="fg"><label class="fl">Бортовой Номер / ID *</label><input class="fi" id="mfId" placeholder="EX-007"/></div>
+          <div class="fg"><label class="fl">Категория оборудования</label><select class="fs" id="mfCat">${['Экскаватор','Самосвал','Буровая','Бульдозер','Кран'].map(t=>`<option>${t}</option>`).join('')}</select></div>
+          <div class="fg ffull"><label class="fl">Техническая марка и модель *</label><input class="fi" id="mfName" placeholder="Экскаватор Komatsu PC1250"/></div>
+          <div class="fg"><label class="fl">Начальный Статус</label><select class="fs" id="mfSt"><option value="active">В работе</option><option value="offline">Отключен (Ремонт)</option></select></div>
+          <div class="fg"><label class="fl">Участок карьера (Локация)</label><input class="fi" id="mfLoc" placeholder="Карьер Северный"/></div>
           <div class="fg ffull" style="display:flex;gap:8px">
-            <button class="btn-a" onclick="addMachine()">+ Добавить</button>
-            <button class="btn-ao" onclick="clearMachineForm()">Очистить</button>
+            <button class="btn-a" onclick="addMachine()">💾 Записать в Систему</button>
+            <button class="btn-ao" onclick="clearMachineForm()">Очистить поля</button>
           </div>
         </div>
       </div>
       <div class="card">
-        <div class="ch"><div class="ct">Машины (${machines.length})</div></div>
+        <div class="ch"><div class="ct">Список автопарка в памяти СУБД (${machines.length})</div></div>
         <div style="max-height:320px;overflow-y:auto">
           <table class="tbl">
-            <thead><tr><th>ID</th><th>Название</th><th>Статус</th><th></th></tr></thead>
+            <thead><tr><th>ID</th><th>Марка машины</th><th>Тех. статус</th><th>Удалить</th></tr></thead>
             <tbody>${machines.map((m,i)=>`<tr>
-              <td style="font-family:'Roboto Mono',monospace;font-size:10px;color:var(--ore)">${m.id}</td>
+              <td style="font-family:'Roboto Mono',monospace;font-size:10px;color:var(--ore);font-weight:700">${m.id}</td>
               <td style="font-weight:600;font-size:12px">${m.name}</td>
               <td>${badgeHtml(m.st)}</td>
               <td><button class="btn-del" onclick="deleteMachine(${i})">✕</button></td>
@@ -914,16 +906,16 @@ function renderAdminTab(tab) {
   } else if(tab==='users') {
     el.innerHTML = `<div class="g2">
       <div class="card">
-        <div class="ch"><div class="ct">Добавить пользователя</div></div>
-        <div class="fg"><label class="fl">ФИО *</label><input class="fi" id="ufN" placeholder="Иванов Иван"/></div>
-        <div class="fg"><label class="fl">Email *</label><input class="fi" id="ufE" placeholder="user@mining.kg"/></div>
-        <div class="fg"><label class="fl">Роль</label><select class="fs" id="ufR">${['Оператор','Техник','Инженер','Администратор'].map(r=>`<option>${r}</option>`).join('')}</select></div>
-        <button class="btn-a" onclick="addUser()">+ Добавить пользователя</button>
+        <div class="ch"><div class="ct">Создать учетную запись диспетчера</div></div>
+        <div class="fg"><label class="fl">Полное имя (ФИО) *</label><input class="fi" id="ufN" placeholder="Усенов Бакыт"/></div>
+        <div class="fg"><label class="fl">Рабочий Email *</label><input class="fi" id="ufE" placeholder="usenov@mining.kg"/></div>
+        <div class="fg"><label class="fl">Уровень прав (Роль)</label><select class="fs" id="ufR">${['Диспетчер','Оператор','Инженер ИТ','Администратор'].map(r=>`<option>${r}</option>`).join('')}</select></div>
+        <button class="btn-a" onclick="addUser()">+ Создать аккаунт</button>
       </div>
       <div class="card">
-        <div class="ch"><div class="ct">Пользователи (${users.length})</div></div>
+        <div class="ch"><div class="ct">Зарегистрированные операторы (${users.length})</div></div>
         <table class="tbl">
-          <thead><tr><th>Пользователь</th><th>Роль</th><th>Статус</th><th></th></tr></thead>
+          <thead><tr><th>Диспетчер</th><th>Права</th><th>Сессия</th><th>Удалить</th></tr></thead>
           <tbody>${users.map((u,i)=>`<tr>
             <td><div style="font-weight:600;font-size:12px">${u.n}</div><div style="font-size:10px;color:var(--textl)">${u.email}</div></td>
             <td><span style="font-size:10px;background:#eff6ff;color:#1d4ed8;padding:2px 6px;border-radius:3px;font-weight:700">${u.role}</span></td>
@@ -936,16 +928,16 @@ function renderAdminTab(tab) {
   } else if(tab==='thresh') {
     el.innerHTML = `<div class="g2">
       <div class="card">
-        <div class="ch"><div class="ct">Пороговые значения датчиков</div></div>
-        <div style="padding:8px 11px;background:#fffbeb;border:1px solid #fde68a;border-radius:7px;font-size:12px;color:#92400e;margin-bottom:13px">⚠ При превышении этих значений система создаёт оповещение</div>
-        <div class="fg"><label class="fl">Макс. температура (°C)</label><input class="fi" id="thrTemp" type="number" value="${thresholds.temp}"/></div>
-        <div class="fg"><label class="fl">Макс. вибрация (мм/с)</label><input class="fi" id="thrVib" type="number" value="${thresholds.vib}"/></div>
-        <div class="fg"><label class="fl">Мин. уровень топлива (%)</label><input class="fi" id="thrFuel" type="number" value="${thresholds.fuel}"/></div>
-        <button class="btn-a" onclick="saveThresholds()">💾 Сохранить</button>
+        <div class="ch"><div class="ct">Редактирование аварийных порогов датчиков</div></div>
+        <div style="padding:8px 11px;background:#fffbeb;border:1px solid #fde68a;border-radius:7px;font-size:12px;color:#92400e;margin-bottom:13px"><b>Интерактивный тест для комиссии КГТУ:</b> Измените лимит температуры (например на 80), и машины с более высокой температурой мгновенно перейдут в статус аварии!</div>
+        <div class="fg"><label class="fl">Критическая температура узлов (°C)</label><input class="fi" id="thrTemp" type="number" value="${thresholds.temp}"/></div>
+        <div class="fg"><label class="fl">Лимит вибрации корпуса (мм/с)</label><input class="fi" id="thrVib" type="number" value="${thresholds.vib}"/></div>
+        <div class="fg"><label class="fl">Минимум топлива в баке (%)</label><input class="fi" id="thrFuel" type="number" value="${thresholds.fuel}"/></div>
+        <button class="btn-a" onclick="saveThresholds()">💾 Применить изменения</button>
       </div>
       <div class="card">
-        <div class="ch"><div class="ct">Текущие пороги</div></div>
-        ${[['🌡 Температура',`> ${thresholds.temp}°C`,'#c0392b'],['📳 Вибрация',`> ${thresholds.vib} мм/с`,'#d4500a'],['⛽ Топливо',`< ${thresholds.fuel}%`,'#b8860b']].map(([l,v,c])=>`
+        <div class="ch"><div class="ct">Активные триггеры безопасности</div></div>
+        ${[['🌡 Температура двигателя',`> ${thresholds.temp}°C`,'#c0392b'],['📳 Механическая вибрация',`> ${thresholds.vib} мм/с`,'#d4500a'],['⛽ Аварийный остаток топлива',`< ${thresholds.fuel}%`,'#b8860b']].map(([l,v,c])=>`
           <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--dust2);font-size:13px">
             <span>${l}</span><span style="font-family:'Roboto Mono',monospace;font-weight:800;color:${c}">${v}</span>
           </div>`).join('')}
@@ -954,24 +946,20 @@ function renderAdminTab(tab) {
   } else if(tab==='system') {
     el.innerHTML = `<div class="g2">
       <div class="card">
-        <div class="ch"><div class="ct">Информация о системе</div></div>
-        ${[['Система','МинингМонитор v2.1'],['Разработчик','Сулайманкул Алмазбек'],['Организация','КГТУ им. И. Раззакова'],['Кафедра','ИСТ им. акад. А. Жайнакова'],['Стек','React.js / HTML / CSS'],['Машин',machines.length],['Пользователей',users.length]].map(([l,v])=>`
+        <div class="ch"><div class="ct">Архитектурная информация системы</div></div>
+        ${[['Наименование комплекса','МинингМонитор Клиент-Серверный прототип'],['Автор-Разработчик ВКР','Сулайманкул Алмазбек Б.'],['Учебное заведение','КГТУ им. И. Раззакова (Политех)'],['Профильная кафедра','ИСТ им. академика А. Жайнакова'],['Технологический стек ядра','React.js Core / JavaScript Engine'],['Объектов в массиве БД',machines.length],['Активных операторов в СУБД',users.length]].map(([l,v])=>`
           <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--dust2);font-size:12px">
             <span style="color:var(--textl)">${l}</span><span style="font-weight:700;font-size:11px">${v}</span>
           </div>`).join('')}
       </div>
       <div style="display:flex;flex-direction:column;gap:10px">
         <div class="card">
-          <div class="ch"><div class="ct">Действия</div></div>
-          ${[['📊 Экспорт данных','Скачать базу в CSV'],['🔄 Сбросить кэш','Очистить временные данные'],['📧 Тест уведомлений','Отправить тест'],['🔒 Журнал доступа','Просмотр логов']].map(([l,d])=>`
-            <button class="btn-ao" style="width:100%;text-align:left;margin-bottom:7px;padding:8px 11px" onclick="notify('${l} — выполнено')">
+          <div class="ch"><div class="ct">Экспорт и Техническое обслуживание логов</div></div>
+          ${[['📊 Выгрузка отчетов в Excel/CSV','Скачать актуальные метрики датчиков'],['🔄 Сбросить кэш сессий','Очистить оперативную память буфера'],['📧 Отправить тестовый e-mail аларм','Проверить шлюз нотификаций']].map(([l,d])=>`
+            <button class="btn-ao" style="width:100%;text-align:left;margin-bottom:7px;padding:8px 11px" onclick="notify('${l} — Скомпилировано локально и выгружено в лог')">
               <div style="font-weight:700;font-size:12px">${l}</div>
               <div style="font-size:10px;color:var(--textl);margin-top:1px">${d}</div>
             </button>`).join('')}
-        </div>
-        <div class="card" style="border-color:#fecaca">
-          <div class="ch"><div class="ct" style="color:#c0392b">⚠ Опасная зона</div></div>
-          <button class="btn-a" style="width:100%;background:#c0392b" onclick="notify('Требуется подтверждение','err')">🗑 Сбросить все данные</button>
         </div>
       </div>
     </div>`;
@@ -979,17 +967,27 @@ function renderAdminTab(tab) {
 }
 
 function addMachine() {
-  const id = document.getElementById('mfId').value.trim();
+  const id = document.getElementById('mfId').value.trim().toUpperCase();
   const name = document.getElementById('mfName').value.trim();
   if(!id||!name){notify('Заполните ID и название','err');return;}
-  if(machines.find(m=>m.id===id)){notify('ID уже существует','err');return;}
+  if(machines.find(m=>m.id===id)){notify('Данный бортовой номер уже занят!','err');return;}
   const cat = document.getElementById('mfCat').value;
   const st = document.getElementById('mfSt').value;
   const loc = document.getElementById('mfLoc').value.trim();
-  machines.push({id,name,ico:'⚙',bg:'#f0f0f0',cat,st,load:0,temp:25,fuel:100,hr:0,prod:0,power:'—',weight:'—',desc:'Новая машина в системе.',loc:loc||'Не указано',year:2026,badge:'В работе'});
+  
+  machines.push({
+    id,name,ico:cat==='Самосвал'?'🚛':cat==='Экскаватор'?'⛏':cat==='Буровая'?'🔩':cat==='Бульдозер'?'🚜':'🏗',
+    bg:'#f0f0f0',cat,st,load:70,temp:75,fuel:90,hr:120,prod:85,power:'1200 кВт',weight:'110 т',
+    desc:'Горная техника введена администратором в базу данных системы мониторинга.',
+    loc:loc||'Участок Центральный',year:2026,badge:'В работе'
+  });
+  
   clearMachineForm();
   renderAdmin();
-  notify('✓ Машина добавлена в систему');
+  notify('Машина успешно добавлена и подключена к шине данных!');
+  
+  // Принудительно обновляем списки на других вкладках
+  renderHome();
 }
 
 function clearMachineForm() {
@@ -999,7 +997,8 @@ function clearMachineForm() {
 function deleteMachine(i) {
   machines.splice(i,1);
   renderAdmin();
-  notify('Машина удалена');
+  renderHome();
+  notify('Машина успешно удалена из структуры мониторинга');
 }
 
 function addUser() {
@@ -1007,30 +1006,35 @@ function addUser() {
   const e=document.getElementById('ufE').value.trim();
   if(!n||!e){notify('Заполните поля','err');return;}
   const r=document.getElementById('ufR').value;
-  users.push({n,email:e,role:r,on:false,last:'Только что'});
+  users.push({n,email:e,role:r.toLowerCase()==='администратор'?'admin':'client',on:false,last:'Только что'});
   renderAdmin();
-  notify('✓ Пользователь добавлен');
+  notify('Новый пользователь успешно зарегистрирован');
 }
 
 function deleteUser(i) {
   users.splice(i,1);
   renderAdmin();
-  notify('Пользователь удалён');
+  notify('Учетная запись диспетчера стерта');
 }
 
 function saveThresholds() {
   thresholds.temp = document.getElementById('thrTemp').value;
   thresholds.vib = document.getElementById('thrVib').value;
   thresholds.fuel = document.getElementById('thrFuel').value;
-  notify('✓ Настройки сохранены');
+  
+  // Моментальная проверка на превышение при обновлении порогов!
+  checkSensorThresholdsLogic();
+  
+  renderAdminTab('thresh');
+  notify('Новые лимиты безопасности успешно применены к ядру ИС!');
 }
 
 // ── ABOUT ───────────────────────────────────────────────
 function renderAbout() {
   document.getElementById('techStack').innerHTML = [
-    ['Frontend','React.js 18 / HTML5'],['Язык','JavaScript ES6+'],
-    ['Визуализация','SVG Charts / CSS3'],['Шрифты','Oswald, Source Sans 3'],
-    ['СУБД','PostgreSQL 15'],['Backend','Node.js + Express']
+    ['Фронтенд-ядро','React.js v18 / SPA Architecture'],['Язык веб-логики','JavaScript ES6+ Асинхронный'],
+    ['Компоненты графиков','SVG Dynamic Engine / CSS3'],['Шрифты интерфейса','Oswald, Source Sans 3'],
+    ['Реляционная база данных','PostgreSQL СУБД (Проектно)'],['Бэкенд платформа','Node.js / Express API (Проектно)']
   ].map(([l,v])=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--dust2);font-size:12px"><span style="color:var(--textl)">${l}</span><span style="font-weight:700">${v}</span></div>`).join('');
 
   document.getElementById('funcList').innerHTML = ['Каталог горных машин','Мониторинг в реальном времени','Графики производительности','Система оповещений','Панель администратора','Регистрация и авторизация','Экспорт отчётов','Адаптивный дизайн'].map(f=>`
@@ -1039,9 +1043,9 @@ function renderAbout() {
     </div>`).join('');
 
   document.getElementById('devInfo').innerHTML = [
-    ['Разработчик','Сулайманкул Алмазбек Балбакович'],['Группа','ИСТд-1-21, 5 курс, заочная'],
-    ['Руководитель','ст. преп. Бакиева Ж.З.'],['Кафедра','ИСТ им. акад. А. Жайнакова'],
-    ['Институт','ИЭТ, КГТУ им. И. Раззакова'],['Год защиты','2026']
+    ['Разработчик системы','Сулайманкул Алмазбек Балбакович'],['Учебная Группа','ИСТд-1-21, 5 курс, заочная'],
+    ['Научный руководитель','ст. преп. Бакиева Ж.З.'],['Кафедра ВУЗа','ИСТ им. акад. А. Жайнакова'],
+    ['Институт Политеха','ИЭТ, КГТУ им. И. Раззакова'],['Календарный год защиты','2026']
   ].map(([l,v])=>`<div style="background:var(--dust);border-radius:7px;padding:9px 11px"><div style="font-size:9px;color:var(--textl);text-transform:uppercase;letter-spacing:.8px;margin-bottom:2px">${l}</div><div style="font-size:12px;font-weight:700">${v}</div></div>`).join('');
 }
 
@@ -1050,7 +1054,7 @@ function renderProfile() {
   if(!currentUser){showPage('home');return;}
   document.getElementById('profileAva').textContent = currentUser.name[0].toUpperCase();
   document.getElementById('profileName').textContent = currentUser.name;
-  document.getElementById('profileRole').textContent = currentUser.role==='admin'?'Администратор':'Клиент';
+  document.getElementById('profileRole').textContent = currentUser.role==='admin'?'Главнокомандующий (Администратор)':'Диспетчер (Просмотр)';
   renderProfileTab(currentProfileTab);
 }
 
@@ -1064,17 +1068,16 @@ function switchProfileTab(tab, el) {
 function renderProfileTab(tab) {
   const el = document.getElementById('profileContent');
   if(tab==='catalog') {
-    el.innerHTML = `<div style="padding:9px 11px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:7px;font-size:12px;color:#15803d;margin-bottom:13px">✓ Добро пожаловать, ${currentUser.name}!</div>
+    el.innerHTML = `<div style="padding:9px 11px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:7px;font-size:12px;color:#15803d;margin-bottom:13px">✓ Авторизованная сессия подтверждена. Добро пожаловать, оператор ${currentUser.name}!</div>
     <div class="cat-grid">${machines.slice(0,3).map(m=>machineCardHtml(m,`showMachineFromHome('${m.id}')`)).join('')}</div>`;
   } else if(tab==='monitor') {
-    el.innerHTML = `<table class="tbl"><thead><tr><th>Машина</th><th>Статус</th><th>КПД</th><th>Темп.</th></tr></thead>
+    el.innerHTML = `<table class="tbl"><thead><tr><th>Машина</th><th>Статус тех.</th><th>КПД</th><th>Датчик Температуры</th></tr></thead>
     <tbody>${machines.map(m=>`<tr><td style="font-weight:600">${m.name}</td><td>${badgeHtml(m.st)}</td><td style="font-family:'Roboto Mono',monospace;font-size:12px">${m.prod}%</td><td><span style="color:${tempColor(m.temp)};font-weight:700">${m.temp}°C</span></td></tr>`).join('')}</tbody></table>`;
   } else {
     el.innerHTML = `<div style="max-width:370px">
-      <div class="fg"><label class="fl">Имя</label><input class="fi" value="${currentUser.name}"/></div>
-      <div class="fg"><label class="fl">Email</label><input class="fi" value="${currentUser.email}"/></div>
-      <div class="fg"><label class="fl">Роль</label><input class="fi" value="${currentUser.role==='admin'?'Администратор':'Клиент'}" readonly style="background:var(--dust)"/></div>
-      <button class="btn-a" onclick="notify('Сохранено')">💾 Сохранить</button>
+      <div class="fg"><label class="fl">ФИО диспетчера</label><input class="fi" value="${currentUser.name}" readonly style="background:var(--dust)"/></div>
+      <div class="fg"><label class="fl">Email сессии</label><input class="fi" value="${currentUser.email}" readonly style="background:var(--dust)"/></div>
+      <div class="fg"><label class="fl">Роль прав доступа</label><input class="fi" value="${currentUser.role==='admin'?'Администратор системы':'Оператор просмотра'}" readonly style="background:var(--dust)"/></div>
     </div>`;
   }
 }
@@ -1103,9 +1106,9 @@ function renderAuthFields() {
   const isReg = currentAuthTab==='register';
   document.getElementById('authFields').innerHTML = `
     ${isReg?`<div class="fg"><label class="fl">Ваше имя</label><input class="fi" id="afName" placeholder="Иван Иванов"/></div>`:''}
-    <div class="fg"><label class="fl">Email</label><input class="fi" id="afEmail" type="email" placeholder="email@example.com"/></div>
+    <div class="fg"><label class="fl">Email / Логин</label><input class="fi" id="afEmail" placeholder="admin"/></div>
     <div class="fg"><label class="fl">Пароль</label><input class="fi" id="afPass" type="password" placeholder="••••••••"/></div>
-    ${isReg?`<div class="fg"><label class="fl">Тип аккаунта</label><select class="fs" id="afRole"><option value="client">Клиент (просмотр)</option><option value="admin">Администратор (полный доступ)</option></select></div>`:''}
+    ${isReg?`<div class="fg"><label class="fl">Тип аккаунта</label><select class="fs" id="afRole"><option value="client">Оператор (Просмотр)</option><option value="admin">Администратор (Полный доступ)</option></select></div>`:''}
   `;
   document.getElementById('authNote').innerHTML = isReg
     ? 'Уже есть аккаунт? <a onclick="switchAuthTab(\'login\')">Войдите</a>'
@@ -1116,22 +1119,46 @@ function doAuth() {
   const email = document.getElementById('afEmail').value.trim();
   const pass = document.getElementById('afPass').value;
   if(!email||!pass){notify('Заполните поля','err');return;}
-  const name = currentAuthTab==='register' ? (document.getElementById('afName').value.trim()||email.split('@')[0]) : email.split('@')[0];
-  const role = currentAuthTab==='register' ? (document.getElementById('afRole')?.value||'client') : 'client';
+  
+  let name = '';
+  let role = 'client';
+
+  // ИНТЕРАКТИВНЫЙ СУПЕРВХОД ДЛЯ ЗАЩИТЫ ДИПЛОМА ПЕРЕД КОМИССИЕЙ КГТУ
+  if((email === 'admin' || email === 'admin@mining.kg') && pass === 'admin123') {
+    name = "Сулайманкул Алмазбек (Администратор)";
+    role = "admin";
+  } else if(currentAuthTab==='register') {
+    name = document.getElementById('afName').value.trim() || email.split('@')[0];
+    role = document.getElementById('afRole')?.value || 'client';
+  } else {
+    name = email.split('@')[0];
+    role = 'client';
+  }
+
   currentUser = {name, email, role};
   closeModal();
-  // Update header
+  
+  // Обновление шапки
   document.getElementById('hactions').innerHTML = `
     <div class="user-chip">
       <div class="user-ava" onclick="showPage('profile')">${name[0].toUpperCase()}</div>
-      <span class="user-nm">${name.split(' ')[0]}</span>
+      <span class="user-nm" style="max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${name.split(' ')[0]}</span>
       <button class="btn-login" onclick="logout()">Выйти</button>
     </div>`;
-  // Show admin link if admin
+    
+  // Открытие панели администратора
   const adminLink = document.getElementById('adminLink');
-  if(role==='admin') adminLink.classList.remove('hidden');
-  else adminLink.classList.add('hidden');
-  notify(`✓ Добро пожаловать, ${name}!`);
+  if(role==='admin') {
+    adminLink.classList.remove('hidden');
+    notify(`Авторизован как Администратор! Доступна панель управления.`);
+  } else {
+    adminLink.classList.add('hidden');
+    notify(`Успешный вход оператора: ${name}`);
+  }
+  
+  // Перерисовка текущей страницы для синхронизации ролей
+  const activePage = document.querySelector('.page.active')?.id;
+  if(activePage==='page-home') renderHome();
 }
 
 function logout() {
@@ -1141,13 +1168,81 @@ function logout() {
     <button class="btn-reg" onclick="openModal('register')">Регистрация</button>`;
   document.getElementById('adminLink').classList.add('hidden');
   showPage('home');
-  notify('Вы вышли из системы');
+  notify('Вы вышли из учетной записи');
 }
+
+// ── ЖИВАЯ КЛИЕНТСКАЯ СИМУЛЯЦИЯ ПОТОКА ДАННЫХ (CORE FEATURE) ──────────────────
+function checkSensorThresholdsLogic() {
+  const limitTemp = parseFloat(thresholds.temp) || 90;
+  
+  machines.forEach(m => {
+    if(m.st === 'offline') return;
+    
+    if(m.temp > limitTemp + 10) {
+      if(m.st !== 'danger') {
+        m.st = 'danger';
+        m.badge = 'Критично';
+        ALERTS.unshift({
+          type: "crit", ico: "🔴", machine: m.id,
+          msg: `Критический перегрев! Датчик зафиксировал: ${m.temp}°C (Порог ${limitTemp}°C)`,
+          time: new Date().toLocaleTimeString('ru-RU').substring(0,5), cat: "Температура"
+        });
+        notify(`Аварийный аларм по технике ${m.id}! Превышен лимит!`, 'err');
+      }
+    } else if(m.temp > limitTemp) {
+      if(m.st !== 'warning') {
+        m.st = 'warning';
+        m.badge = 'Внимание';
+        ALERTS.unshift({
+          type: "warn", ico: "🟡", machine: m.id,
+          msg: `Предупреждение по температуре: ${m.temp}°C (Порог ${limitTemp}°C)`,
+          time: new Date().toLocaleTimeString('ru-RU').substring(0,5), cat: "Температура"
+        });
+        notify(`Внимание: Превышен температурный режим по машине ${m.id}`);
+      }
+    } else {
+      if(m.st === 'warning' || m.st === 'danger') {
+        m.st = 'active';
+        m.badge = 'В работе';
+      }
+    }
+  });
+  
+  // Перерисовываем активную страницу на лету, чтобы цифры и графики обновлялись в реальном времени!
+  const activePage = document.querySelector('.page.active')?.id;
+  if(activePage === 'page-monitoring') renderMonitoring();
+  if(activePage === 'page-home') renderHome();
+  if(activePage === 'page-alerts') renderAlerts();
+  if(activePage === 'page-catalog' && !document.getElementById('catalogDetail').classList.contains('hidden')) {
+    // Если открыта детальная страница машины, перерисовываем её внутренности
+    const currentDetailId = document.getElementById('detailContent')?.querySelector('.mc-sv')?.textContent;
+    if(currentDetailId) showMachineDetail(currentDetailId);
+  }
+}
+
+// Запускаем бесконечный цикл обновления датчиков раз в 4 секунды (Имитация бэкенда)
+setInterval(() => {
+  machines.forEach(m => {
+    if(m.st !== 'offline') {
+      // Случайные колебания нагрузки (-3 до +3)
+      m.load = Math.max(40, Math.min(100, m.load + Math.floor(Math.random() * 7) - 3));
+      // Случайные колебания температуры (-2 до +2)
+      m.temp = Math.max(60, Math.min(115, m.temp + Math.floor(Math.random() * 5) - 2));
+      // Топливо медленно расходуется
+      m.fuel = Math.max(2, Math.round((m.fuel - Math.random() * 0.3) * 10) / 10);
+      // Небольшое изменение КПД на основе нагрузки
+      m.prod = Math.max(40, Math.min(99, Math.round(m.load * 0.9 + Math.random() * 5)));
+    }
+  });
+
+  // Запуск логики проверки лимитов и перерисовки UI
+  checkSensorThresholdsLogic();
+}, 4000);
 
 // ── INIT ────────────────────────────────────────────────
 window.onload = function() {
   renderHome();
-  // Update clock
+  // Динамический заголовок вкладки со временем
   setInterval(()=>{
     const now = new Date();
     document.title = `МинингМонитор — ${now.toLocaleTimeString('ru-RU')}`;
