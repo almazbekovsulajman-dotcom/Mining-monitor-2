@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>МинингМонитор — Система мониторинга горных машин</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Source+Sans+3:wght@400;500;600;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --coal:#1a1a1a;--ore:#d4500a;--ore2:#b84408;--ore3:#f06020;
+  --dust:#f7f7f5;--dust2:#eeede9;--dust3:#e2e0da;
+  --white:#fff;--text:#1a1a1a;--textm:#4a4a4a;--textl:#757575;
+  --green:#2d6a2d;--green2:#38a038;--red:#c0392b;--yellow:#b8860b;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Source Sans 3',sans-serif;background:var(--dust);color:var(--text);font-size:15px;line-height:1.6}
+h1,h2,h3,h4{font-family:'Oswald',sans-serif;line-height:1.2}
+button{cursor:pointer;border:none;font-family:'Source Sans 3',sans-serif}
+.site{display:flex;flex-direction:column;min-height:100vh}
+.container{max-width:1140px;margin:0 auto;padding:0 20px}
+.hidden{display:none!important}
+
+/* HEADER */
+.header{background:var(--coal);position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,.3)}
+.htop{background:#111;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:11px;color:rgba(255,255,255,.4)}
+.htop-inner{display:flex;justify-content:space-between}
+.hinner{display:flex;align-items:center;height:56px;gap:0}
+.logo{display:flex;align-items:center;gap:10px;padding-right:18px;border-right:1px solid rgba(255,255,255,.1);cursor:pointer;flex-shrink:0}
+.logo-mark{width:36px;height:36px;background:var(--ore);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.logo-name{font-family:'Oswald',sans-serif;font-size:16px;font-weight:700;color:#fff;white-space:nowrap}
+.logo-tag{font-size:9px;color:rgba(255,255,255,.3);letter-spacing:1px;text-transform:uppercase}
+.nav{display:flex;align-items:center;flex:1;padding:0 12px;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{padding:0 11px;font-size:12px;font-weight:600;color:rgba(255,255,255,.55);white-space:nowrap;cursor:pointer;border-bottom:2px solid transparent;height:56px;display:flex;align-items:center;transition:color .15s;text-transform:uppercase;letter-spacing:.3px}
+.nav a:hover{color:#fff}
+.nav a.on{color:#fff;border-bottom-color:var(--ore)}
+.hactions{display:flex;align-items:center;gap:7px;margin-left:auto;flex-shrink:0}
+.btn-login{padding:5px 13px;background:transparent;border:1.5px solid rgba(255,255,255,.25);color:rgba(255,255,255,.8);font-size:11px;font-weight:600;border-radius:4px;transition:all .15s;text-transform:uppercase}
+.btn-login:hover{border-color:var(--ore);color:#fff}
+.btn-reg{padding:5px 13px;background:var(--ore);color:#fff;font-size:11px;font-weight:700;border-radius:4px}
+.btn-reg:hover{background:var(--ore2)}
+.user-chip{display:flex;align-items:center;gap:8px}
+.user-ava{width:30px;height:30px;border-radius:50%;background:var(--ore);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px;cursor:pointer}
+.user-nm{font-size:12px;color:rgba(255,255,255,.7);font-weight:600}
+
+/* PAGES */
+.page{display:none}
+.page.active{display:block}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#111,#1e1e1e 50%,#252018);padding:65px 0 55px;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;opacity:.03;background-image:repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(255,255,255,.5) 40px,rgba(255,255,255,.5) 41px),repeating-linear-gradient(90deg,transparent,transparent 40px,rgba(255,255,255,.5) 40px,rgba(255,255,255,.5) 41px)}
+.hero-inner{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center;position:relative}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(212,80,10,.15);border:1px solid rgba(212,80,10,.3);color:var(--ore3);font-size:11px;font-weight:700;padding:4px 11px;border-radius:20px;letter-spacing:1px;text-transform:uppercase;margin-bottom:13px}
+.hero-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--ore3);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{font-size:38px;font-weight:700;color:#fff;margin-bottom:14px;line-height:1.1}
+.hero h1 span{color:var(--ore3)}
+.hero-desc{font-size:15px;color:rgba(255,255,255,.55);line-height:1.7;margin-bottom:22px;max-width:460px}
+.hero-btns{display:flex;gap:9px;flex-wrap:wrap}
+.btn-primary{padding:11px 22px;background:var(--ore);color:#fff;font-size:13px;font-weight:700;border-radius:4px;letter-spacing:.5px;transition:all .2s;cursor:pointer;border:none;font-family:'Source Sans 3',sans-serif}
+.btn-primary:hover{background:var(--ore2);transform:translateY(-1px)}
+.btn-sec{padding:10px 22px;background:transparent;color:#fff;font-size:13px;font-weight:600;border-radius:4px;letter-spacing:.5px;border:1.5px solid rgba(255,255,255,.25);cursor:pointer;font-family:'Source Sans 3',sans-serif;transition:all .2s}
+.btn-sec:hover{border-color:rgba(255,255,255,.6)}
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.08);border-radius:8px;overflow:hidden;margin-top:28px}
+.hstat{background:rgba(255,255,255,.04);padding:13px;text-align:center}
+.hstat-v{font-family:'Oswald',sans-serif;font-size:24px;font-weight:700;color:var(--ore3)}
+.hstat-l{font-size:9px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.hero-monitor{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:16px}
+.hm-hdr{display:flex;align-items:center;gap:5px;margin-bottom:12px;padding-bottom:9px;border-bottom:1px solid rgba(255,255,255,.07)}
+.hm-dot{width:8px;height:8px;border-radius:50%}
+.hm-title{font-size:10px;color:rgba(255,255,255,.45);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-left:4px}
+.hm-live{margin-left:auto;display:flex;align-items:center;gap:4px;color:#4ade80;font-size:10px;font-weight:700}
+.hm-live-d{width:5px;height:5px;border-radius:50%;background:#4ade80;animation:pulse 1.5s infinite}
+.mrow{display:flex;align-items:center;gap:7px;font-size:11px;margin-bottom:6px}
+.mrow-name{color:rgba(255,255,255,.6);width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mrow-bar{flex:1;height:4px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden}
+.mrow-fill{height:100%;border-radius:2px}
+.mrow-val{color:rgba(255,255,255,.85);width:28px;text-align:right;font-family:'Roboto Mono',monospace;font-size:10px}
+.mrow-st{font-size:8px;padding:1px 5px;border-radius:3px;font-weight:700;flex-shrink:0;color:#fff}
+
+/* SECTION */
+.section{padding:50px 0}
+.section-alt{background:#fff}
+.section-dark{background:var(--coal);color:#fff}
+.sh{margin-bottom:28px}
+.sh.center{text-align:center}
+.stag{display:inline-block;background:rgba(212,80,10,.08);color:var(--ore);font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:1px;text-transform:uppercase;margin-bottom:7px;border:1px solid rgba(212,80,10,.15)}
+.sh h2{font-size:26px;font-weight:700;color:var(--coal)}
+.section-dark .sh h2{color:#fff}
+.sh p{font-size:14px;color:var(--textl);margin-top:5px;max-width:560px}
+.sh.center p{margin:5px auto 0}
+
+/* GRIDS */
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:16px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:16px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:16px}
+.g21{display:grid;grid-template-columns:2fr 1fr;gap:15px;margin-bottom:16px}
+
+/* CARD */
+.card{background:#fff;border:1px solid var(--dust3);border-radius:11px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.08),0 4px 12px rgba(0,0,0,.04)}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.ct{font-size:11px;font-weight:700;color:var(--textm);text-transform:uppercase;letter-spacing:.6px}
+.ca{font-size:11px;color:var(--ore);cursor:pointer;font-weight:600}
+
+/* KPI */
+.kpi{background:#fff;border:1px solid var(--dust3);border-radius:11px;padding:15px 17px;position:relative;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.kpi-bar{position:absolute;top:0;left:0;right:0;height:3px;border-radius:11px 11px 0 0}
+.kpi-l{font-size:9px;font-weight:700;color:var(--textl);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px}
+.kpi-v{font-size:24px;font-weight:800;color:var(--coal);letter-spacing:-1px;font-family:'Roboto Mono',monospace}
+.kpi-s{font-size:10px;color:var(--textl);margin-top:3px}
+.up{color:var(--green2);font-weight:700}
+.dn{color:var(--red);font-weight:700}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{padding:8px 11px;text-align:left;font-size:10px;font-weight:700;color:var(--textl);text-transform:uppercase;letter-spacing:.8px;border-bottom:2px solid var(--dust3);background:var(--dust2)}
+.tbl td{padding:9px 11px;border-bottom:1px solid var(--dust2);font-size:13px;color:var(--textm);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(212,80,10,.03);cursor:pointer}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:20px;font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase}
+.badge::before{content:'●';font-size:6px}
+.ba{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0}
+.bw{background:#fffbeb;color:#92400e;border:1px solid #fde68a}
+.bd{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+.bo{background:#f8fafc;color:#64748b;border:1px solid #e2e8f0}
+
+/* PROGRESS */
+.pg-wrap{width:55px;height:4px;background:var(--dust2);border-radius:2px;overflow:hidden;display:inline-block;vertical-align:middle}
+.pg-fill{height:100%;border-radius:2px}
+.po{background:linear-gradient(90deg,#d4500a,#b84408)}
+.pgr{background:linear-gradient(90deg,#2d6a2d,#38a038)}
+.py{background:linear-gradient(90deg,#b8860b,#a07708)}
+.pr{background:linear-gradient(90deg,#c0392b,#a02020)}
+
+/* MACHINE CARDS */
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:17px}
+.mc{background:#fff;border:1px solid var(--dust3);border-radius:11px;overflow:hidden;cursor:pointer;transition:all .2s}
+.mc:hover{border-color:var(--ore);box-shadow:0 4px 16px rgba(0,0,0,.12),0 12px 40px rgba(0,0,0,.08);transform:translateY(-2px)}
+.mc-img{height:150px;display:flex;align-items:center;justify-content:center;font-size:62px;position:relative}
+.mc-bdg{position:absolute;top:9px;left:9px;background:var(--ore);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;letter-spacing:.5px;text-transform:uppercase}
+.mc-body{padding:13px}
+.mc-type{font-size:9px;font-weight:700;color:var(--ore);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
+.mc-name{font-family:'Oswald',sans-serif;font-size:15px;font-weight:600;margin-bottom:5px}
+.mc-desc{font-size:12px;color:var(--textl);line-height:1.5;margin-bottom:9px}
+.mc-specs{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:7px;background:var(--dust);border-radius:6px;margin-bottom:10px}
+.mc-sl{font-size:9px;color:var(--textl)}
+.mc-sv{font-size:10px;font-weight:700;font-family:'Roboto Mono',monospace}
+.mc-footer{display:flex;align-items:center;justify-content:space-between}
+.mc-st{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:700}
+.mc-st::before{content:'●';font-size:7px}
+.sta{color:#38a038}.stw{color:#b8860b}.std{color:#c0392b}.sto{color:#94a3b8}
+.btn-det{padding:5px 11px;background:var(--ore);color:#fff;font-size:11px;font-weight:700;border-radius:4px;border:none;cursor:pointer;font-family:'Source Sans 3',sans-serif}
+.btn-det:hover{background:var(--ore2)}
+
+/* ALERTS */
+.ar{display:flex;gap:10px;padding:9px 11px;border-radius:8px;margin-bottom:7px;border-left:3px solid}
+.ar.crit{background:#fef2f2;border-color:#c0392b}
+.ar.warn{background:#fffbeb;border-color:#b8860b}
+.ar.info{background:#eff6ff;border-color:#3b82f6}
+.ar-t{font-size:12px;font-weight:600;color:var(--coal)}
+.ar-m{font-size:10px;color:var(--textl);margin-top:1px;font-family:'Roboto Mono',monospace}
+
+/* ARTICLES */
+.art-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.art{background:#fff;border:1px solid var(--dust3);border-radius:11px;overflow:hidden;cursor:pointer;transition:all .2s}
+.art:hover{box-shadow:0 4px 16px rgba(0,0,0,.12);transform:translateY(-2px)}
+.art-img{height:120px;display:flex;align-items:center;justify-content:center;font-size:42px}
+.art-body{padding:13px}
+.art-cat{font-size:9px;font-weight:700;color:var(--ore);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.art-title{font-family:'Oswald',sans-serif;font-size:14px;font-weight:600;margin-bottom:5px;line-height:1.3}
+.art-desc{font-size:11px;color:var(--textl);line-height:1.5}
+.art-meta{display:flex;justify-content:space-between;margin-top:9px;padding-top:7px;border-top:1px solid var(--dust2);font-size:10px;color:var(--textl)}
+
+/* SVG CHART */
+.chart-wrap{width:100%;overflow:hidden}
+.chart-svg{width:100%;height:160px}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:#fff;border-radius:11px;width:100%;max-width:390px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:su .25s ease}
+@keyframes su{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.mhdr{background:var(--coal);padding:16px 20px;display:flex;align-items:center;justify-content:space-between}
+.mttl{font-family:'Oswald',sans-serif;font-size:17px;font-weight:700;color:#fff}
+.mclose{background:rgba(255,255,255,.1);border:none;color:#fff;width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:13px}
+.mbody{padding:18px}
+.mtabs{display:flex;margin-bottom:16px;border-bottom:2px solid var(--dust2)}
+.mtab{padding:6px 16px;font-size:13px;font-weight:600;color:var(--textl);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s}
+.mtab.on{color:var(--ore);border-bottom-color:var(--ore)}
+.fg{margin-bottom:13px}
+.fl{display:block;font-size:10px;font-weight:700;color:var(--textm);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.fi{width:100%;padding:8px 11px;border:1.5px solid var(--dust3);border-radius:7px;font-size:13px;color:var(--text);background:#fff;outline:none;transition:border-color .15s;font-family:'Source Sans 3',sans-serif}
+.fi:focus{border-color:var(--ore)}
+.fs{width:100%;padding:8px 11px;border:1.5px solid var(--dust3);border-radius:7px;font-size:13px;color:var(--text);background:#fff;outline:none;cursor:pointer;font-family:'Source Sans 3',sans-serif}
+.btn-sub{width:100%;padding:10px;background:var(--ore);color:#fff;font-size:14px;font-weight:700;border-radius:7px;margin-top:5px;letter-spacing:.5px;border:none;cursor:pointer;font-family:'Source Sans 3',sans-serif}
+.btn-sub:hover{background:var(--ore2)}
+.fnote{font-size:11px;color:var(--textl);text-align:center;margin-top:9px}
+.fnote a{color:var(--ore);cursor:pointer;font-weight:600}
+.demo-box{margin-top:12px;padding:9px 11px;background:var(--dust);border-radius:7px;font-size:11px;color:var(--textl)}
+
+/* ADMIN */
+.tabs{display:flex;gap:3px;background:var(--dust2);padding:3px;border-radius:8px;margin-bottom:16px;width:fit-content;border:1px solid var(--dust3)}
+.tab{padding:6px 13px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;color:var(--textl);transition:all .15s}
+.tab.on{background:#fff;color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.ffull{grid-column:1/-1}
+.btn-a{padding:8px 15px;background:var(--ore);color:#fff;font-size:12px;font-weight:700;border-radius:4px;border:none;cursor:pointer;font-family:'Source Sans 3',sans-serif}
+.btn-a:hover{background:var(--ore2)}
+.btn-ao{background:#fff;color:var(--coal);border:1.5px solid var(--dust3);padding:7px 13px;font-size:12px;font-weight:600;border-radius:4px;cursor:pointer;font-family:'Source Sans 3',sans-serif;transition:all .15s}
+.btn-ao:hover{border-color:var(--ore);color:var(--ore)}
+.btn-del{padding:3px 9px;background:#fff;color:#c0392b;border:1.5px solid #fca5a5;font-size:10px;font-weight:700;border-radius:4px;cursor:pointer;font-family:'Source Sans 3',sans-serif}
+.btn-del:hover{background:#c0392b;color:#fff}
+.adm-stat{background:var(--dust);border-radius:7px;padding:13px;border-left:3px solid var(--ore)}
+.adm-sl{font-size:9px;font-weight:700;color:var(--textl);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px}
+.adm-sv{font-family:'Roboto Mono',monospace;font-size:20px;font-weight:700;color:var(--coal)}
+
+/* CARD WHITE */
+.cw{background:#fff;border:1px solid var(--dust3);border-radius:11px;padding:16px;margin-bottom:13px}
+
+/* TOAST */
+.toast{position:fixed;bottom:18px;right:18px;z-index:999;padding:10px 15px;border-radius:8px;font-size:13px;font-weight:600;box-shadow:0 4px 24px rgba(0,0,0,.2);display:flex;align-items:center;gap:7px;animation:su .3s ease}
+.tok{background:var(--coal);color:#fff;border-left:3px solid #38a038}
+.ter{background:#c0392b;color:#fff}
+
+/* FOOTER */
+.footer{background:var(--coal);color:rgba(255,255,255,.5);margin-top:auto}
+.footer-main{padding:38px 0 26px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;border-bottom:1px solid rgba(255,255,255,.07)}
+.footer-brand p{font-size:12px;line-height:1.7;color:rgba(255,255,255,.3);max-width:230px;margin-top:10px}
+.footer-col h4{font-family:'Oswald',sans-serif;font-size:12px;font-weight:600;color:#fff;letter-spacing:.5px;text-transform:uppercase;margin-bottom:11px}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:6px}
+.footer-col li{font-size:12px;cursor:pointer;transition:color .15s}
+.footer-col li:hover{color:#fff}
+.footer-bottom{padding:13px 0;display:flex;justify-content:space-between;font-size:11px}
+
+/* UPANEL */
+.uh{background:var(--coal);border-radius:11px 11px 0 0;padding:16px 20px;display:flex;align-items:center;gap:11px}
+.uava{width:38px;height:38px;border-radius:50%;background:var(--ore);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px;flex-shrink:0}
+.uname{font-family:'Oswald',sans-serif;font-size:16px;color:#fff;font-weight:700}
+.urole{font-size:9px;color:rgba(255,255,255,.35);letter-spacing:1px;text-transform:uppercase}
+.utabs{display:flex;background:#fff;border:1px solid var(--dust3);border-top:none}
+.utab{padding:10px 16px;font-size:12px;font-weight:600;color:var(--textl);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
+.utab.on{color:var(--ore);border-bottom-color:var(--ore)}
+.ubody{background:#fff;border:1px solid var(--dust3);border-top:none;border-radius:0 0 11px 11px;padding:18px}
+
+/* DETAIL PAGE */
+.back-btn{padding:6px 13px;background:#fff;color:var(--coal);border:1.5px solid var(--dust3);font-size:12px;font-weight:600;border-radius:4px;cursor:pointer;margin-bottom:16px;font-family:'Source Sans 3',sans-serif}
+.back-btn:hover{border-color:var(--ore);color:var(--ore)}
+
+@media(max-width:900px){
+  .hero-inner{grid-template-columns:1fr}
+  .hero-visual{display:none}
+  .g4,.g3,.cat-grid,.art-grid{grid-template-columns:repeat(2,1fr)}
+  .g21,.footer-main{grid-template-columns:1fr}
+  .nav a{padding:0 8px;font-size:11px}
+  .fgrid{grid-template-columns:1fr}
+}
+@media(max-width:500px){
+  .g4,.g3,.cat-grid,.art-grid{grid-template-columns:1fr}
+  .hero h1{font-size:28px}
+  .btn-primary,.btn-sec{padding:9px 16px;font-size:12px}
+}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--dust)}
+::-webkit-scrollbar-thumb{background:var(--dust3);border-radius:3px}
+</style>
+</head>
+<body>
+<div class="site">
+
+<!-- HEADER -->
+<header class="header">
+  <div class="htop"><div class="container"><div class="htop-inner">
+    <span>📞 +996 (312) 54-32-10 &nbsp;|&nbsp; 📧 info@mining-monitor.kg &nbsp;|&nbsp; 📍 Бишкек, КГТУ им. Раззакова</span>
+    <span>Пн–Пт: 09:00–18:00</span>
+  </div></div></div>
+  <div class="container"><div class="hinner">
+    <div class="logo" onclick="showPage('home')">
+      <div class="logo-mark">⛏</div>
+      <div><div class="logo-name">МинингМонитор</div><div class="logo-tag">Горные машины и мониторинг</div></div>
+    </div>
+    <nav class="nav" id="mainNav">
+      <a onclick="showPage('home')" class="on" data-page="home">Главная</a>
+      <a onclick="showPage('catalog')" data-page="catalog">Каталог техники</a>
+      <a onclick="showPage('monitoring')" data-page="monitoring">Мониторинг</a>
+      <a onclick="showPage('alerts')" data-page="alerts">Оповещения</a>
+      <a onclick="showPage('articles')" data-page="articles">Статьи</a>
+      <a onclick="showPage('about')" data-page="about">О системе</a>
+      <a onclick="showPage('admin')" data-page="admin" id="adminLink" class="hidden">🛡 Администратор</a>
+    </nav>
+    <div class="hactions" id="hactions">
+      <button class="btn-login" onclick="openModal('login')">Войти</button>
+      <button class="btn-reg" onclick="openModal('register')">Регистрация</button>
+    </div>
+  </div></div>
+</header>
+
+<!-- HOME PAGE -->
+<div class="page active" id="page-home">
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container"><div class="hero-inner">
+      <div>
+        <div class="hero-badge"><div class="hero-badge-dot"></div>Система мониторинга 2026</div>
+        <h1>Информационная система<br/>мониторинга <span>горных машин</span></h1>
+        <p class="hero-desc">Комплексная платформа для контроля производительности, технического состояния и анализа данных карьерной техники в реальном времени</p>
+        <div class="hero-btns">
+          <button class="btn-primary" onclick="showPage('catalog')">Каталог техники</button>
+          <button class="btn-sec" onclick="showPage('monitoring')">Мониторинг</button>
+        </div>
+        <div class="hero-stats">
+          <div class="hstat"><div class="hstat-v">6</div><div class="hstat-l">Машин в парке</div></div>
+          <div class="hstat"><div class="hstat-v">24/7</div><div class="hstat-l">Мониторинг</div></div>
+          <div class="hstat"><div class="hstat-v">79%</div><div class="hstat-l">Средний КПД</div></div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-monitor">
+          <div class="hm-hdr">
+            <div class="hm-dot" style="background:#ff5f57"></div>
+            <div class="hm-dot" style="background:#febc2e"></div>
+            <div class="hm-dot" style="background:#28c840"></div>
+            <div class="hm-title">Мониторинг машин</div>
+            <div class="hm-live"><div class="hm-live-d"></div>Live</div>
+          </div>
+          <div class="mrow"><div class="mrow-name">⛏ EX-001</div><div class="mrow-bar"><div class="mrow-fill" style="width:94%;background:#d4500a"></div></div><div class="mrow-val">94%</div><div class="mrow-st" style="background:rgba(45,106,45,.3);color:#4ade80">В работе</div></div>
+          <div class="mrow"><div class="mrow-name">🚛 DT-002</div><div class="mrow-bar"><div class="mrow-fill" style="width:88%;background:#d4500a"></div></div><div class="mrow-val">88%</div><div class="mrow-st" style="background:rgba(45,106,45,.3);color:#4ade80">В работе</div></div>
+          <div class="mrow"><div class="mrow-name">🔩 DR-003</div><div class="mrow-bar"><div class="mrow-fill" style="width:61%;background:#f97316"></div></div><div class="mrow-val">61%</div><div class="mrow-st" style="background:rgba(212,80,10,.3);color:#fb923c">Внимание</div></div>
+          <div class="mrow"><div class="mrow-name">🚛 DT-004</div><div class="mrow-bar"><div class="mrow-fill" style="width:91%;background:#d4500a"></div></div><div class="mrow-val">91%</div><div class="mrow-st" style="background:rgba(45,106,45,.3);color:#4ade80">В работе</div></div>
+          <div class="mrow"><div class="mrow-name">🏗 CR-006</div><div class="mrow-bar"><div class="mrow-fill" style="width:42%;background:#ef4444"></div></div><div class="mrow-val">42%</div><div class="mrow-st" style="background:rgba(192,57,43,.3);color:#f87171">Критично</div></div>
+        </div>
+      </div>
+    </div></div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sh center"><div class="stag">Техника</div><h2>Парк горных машин</h2><p>Основные виды горного оборудования, применяемого на открытых горных работах</p></div>
+      <div class="cat-grid" id="homeCatalog"></div>
+      <div style="text-align:center;margin-top:20px"><button class="btn-primary" onclick="showPage('catalog')">Весь каталог техники →</button></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="sh center"><div class="stag">Публикации</div><h2>Последние статьи</h2></div>
+      <div class="art-grid" id="homeArticles"></div>
+    </div>
+  </section>
+
+  <section class="section section-dark">
+    <div class="container">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center">
+        <div>
+          <div class="stag" style="background:rgba(212,80,10,.2);border-color:rgba(212,80,10,.4)">О проекте</div>
+          <h2 style="color:#fff;margin-top:8px;font-size:26px">Дипломная работа:<br/>ИС мониторинга горных машин</h2>
+          <p style="color:rgba(255,255,255,.5);margin-top:11px;line-height:1.7;font-size:14px">Проект разработан в рамках ВКР по направлению 710200 «Информационные системы и технологии» (профиль: ИСТ в горном деле) в КГТУ им. И. Раззакова.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:16px">
+            <div style="background:rgba(255,255,255,.05);border-radius:7px;padding:9px 11px"><div style="font-size:9px;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Разработчик</div><div style="font-size:12px;color:#fff;font-weight:600">Сулайманкул Алмазбек</div></div>
+            <div style="background:rgba(255,255,255,.05);border-radius:7px;padding:9px 11px"><div style="font-size:9px;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Группа</div><div style="font-size:12px;color:#fff;font-weight:600">ИСТд-1-21</div></div>
+            <div style="background:rgba(255,255,255,.05);border-radius:7px;padding:9px 11px"><div style="font-size:9px;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Руководитель</div><div style="font-size:12px;color:#fff;font-weight:600">Бакиева Ж.З.</div></div>
+            <div style="background:rgba(255,255,255,.05);border-radius:7px;padding:9px 11px"><div style="font-size:9px;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Год</div><div style="font-size:12px;color:#fff;font-weight:600">2026</div></div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px">
+          <div style="background:rgba(255,255,255,.05);border-radius:9px;padding:13px"><div style="font-size:20px;margin-bottom:6px">📊</div><div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:3px">Мониторинг в реальном времени</div><div style="font-size:10px;color:rgba(255,255,255,.32);line-height:1.5">Контроль датчиков каждые 5 секунд</div></div>
+          <div style="background:rgba(255,255,255,.05);border-radius:9px;padding:13px"><div style="font-size:20px;margin-bottom:6px">⚠</div><div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:3px">Система оповещений</div><div style="font-size:10px;color:rgba(255,255,255,.32);line-height:1.5">Автоматические тревоги при отклонениях</div></div>
+          <div style="background:rgba(255,255,255,.05);border-radius:9px;padding:13px"><div style="font-size:20px;margin-bottom:6px">📈</div><div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:3px">Аналитика данных</div><div style="font-size:10px;color:rgba(255,255,255,.32);line-height:1.5">Графики производительности и трендов</div></div>
+          <div style="background:rgba(255,255,255,.05);border-radius:9px;padding:13px"><div style="font-size:20px;margin-bottom:6px">🛡</div><div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:3px">Панель администратора</div><div style="font-size:10px;color:rgba(255,255,255,.32);line-height:1.5">Управление машинами и пользователями</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- CATALOG PAGE -->
+<div class="page" id="page-catalog">
+  <div class="section"><div class="container">
+    <div id="catalogDetail" class="hidden">
+      <button class="back-btn" onclick="hideMachineDetail()">← Назад к каталогу</button>
+      <div id="detailContent"></div>
+    </div>
+    <div id="catalogMain">
+      <div class="sh"><div class="stag">Каталог</div><h2>Горные машины и оборудование</h2><p>Экскаваторы, самосвалы, буровые установки и вспомогательная техника</p></div>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:20px" id="catFilters"></div>
+      <div class="cat-grid" id="catalogGrid"></div>
+    </div>
+  </div></div>
+</div>
+
+<!-- MONITORING PAGE -->
+<div class="page" id="page-monitoring">
+  <div class="section"><div class="container">
+    <div class="sh"><div class="stag">Мониторинг</div><h2>Система мониторинга горных машин</h2><p>Контроль состояния техники в реальном времени</p></div>
+    <div class="g4" id="monKpis"></div>
+    <div class="g21">
+      <div class="card">
+        <div class="ch"><div class="ct">Производительность за 6 месяцев (%)</div></div>
+        <div class="chart-wrap">
+          <svg class="chart-svg" id="perfChart" viewBox="0 0 600 160" preserveAspectRatio="none"></svg>
+        </div>
+        <div style="display:flex;gap:16px;justify-content:center;margin-top:8px">
+          <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--textl)"><div style="width:12px;height:3px;background:#d4500a;border-radius:2px"></div>Экскаватор</div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--textl)"><div style="width:12px;height:3px;background:#2d6a2d;border-radius:2px"></div>Самосвал</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Последние тревоги</div><div class="ca" onclick="showPage('alerts')">Все →</div></div>
+        <div id="monAlerts"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">Таблица мониторинга</div></div>
+      <div style="overflow-x:auto"><table class="tbl" id="monTable"></table></div>
+    </div>
+  </div></div>
+</div>
+
+<!-- ALERTS PAGE -->
+<div class="page" id="page-alerts">
+  <div class="section"><div class="container">
+    <div class="sh"><div class="stag">Оповещения</div><h2>Система оповещений</h2><p>Критические события и предупреждения в реальном времени</p></div>
+    <div class="g3" id="alertKpis" style="margin-bottom:18px"></div>
+    <div class="card" id="alertsList"></div>
+  </div></div>
+</div>
+
+<!-- ARTICLES PAGE -->
+<div class="page" id="page-articles">
+  <div class="section"><div class="container">
+    <div class="sh"><div class="stag">Статьи</div><h2>Публикации и обзоры</h2><p>Технические статьи о горном оборудовании, системах мониторинга и автоматизации</p></div>
+    <div class="art-grid" id="allArticles"></div>
+  </div></div>
+</div>
+
+<!-- ABOUT PAGE -->
+<div class="page" id="page-about">
+  <div class="section"><div class="container" style="max-width:800px">
+    <div class="sh"><div class="stag">О системе</div><h2>Информационная система мониторинга горных машин</h2></div>
+    <div class="cw">
+      <h3 style="font-family:'Oswald',sans-serif;font-size:17px;margin-bottom:9px">О проекте</h3>
+      <p style="color:var(--textm);line-height:1.8;font-size:14px">Система разработана в рамках ВКР по направлению 710200 «ИСТ» (профиль: ИСТ в горном деле) в КГТУ им. И. Раззакова. Предназначена для мониторинга технического состояния и анализа производительности горных машин на открытых горных предприятиях.</p>
+    </div>
+    <div class="g2">
+      <div class="cw">
+        <h4 style="font-family:'Oswald',sans-serif;font-size:14px;margin-bottom:9px">Технический стек</h4>
+        <div id="techStack"></div>
+      </div>
+      <div class="cw">
+        <h4 style="font-family:'Oswald',sans-serif;font-size:14px;margin-bottom:9px">Функциональность</h4>
+        <div id="funcList"></div>
+      </div>
+    </div>
+    <div class="cw">
+      <h4 style="font-family:'Oswald',sans-serif;font-size:14px;margin-bottom:11px">Сведения о разработке</h4>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px" id="devInfo"></div>
+    </div>
+  </div></div>
+</div>
+
+<!-- ADMIN PAGE -->
+<div class="page" id="page-admin">
+  <div class="section"><div class="container">
+    <div class="sh">
+      <div class="stag">Администратор</div>
+      <h2>Панель управления системой</h2>
+      <p>Полный контроль над машинами, пользователями и настройками</p>
+    </div>
+    <div class="g3" id="adminKpis" style="margin-bottom:16px"></div>
+    <div class="tabs" id="adminTabs">
+      <div class="tab on" onclick="switchAdminTab('machines',this)">⚙ Машины</div>
+      <div class="tab" onclick="switchAdminTab('users',this)">👤 Пользователи</div>
+      <div class="tab" onclick="switchAdminTab('thresh',this)">⚡ Пороги</div>
+      <div class="tab" onclick="switchAdminTab('system',this)">🖥 Система</div>
+    </div>
+    <div id="adminContent"></div>
+  </div></div>
+</div>
+
+<!-- PROFILE PAGE -->
+<div class="page" id="page-profile">
+  <div class="section"><div style="max-width:880px;margin:0 auto;padding:0 20px">
+    <div class="uh">
+      <div class="uava" id="profileAva">А</div>
+      <div><div class="uname" id="profileName">Пользователь</div><div class="urole" id="profileRole">Клиент</div></div>
+      <button class="btn-login" style="margin-left:auto" onclick="logout()">Выйти</button>
+    </div>
+    <div class="utabs">
+      <div class="utab on" onclick="switchProfileTab('catalog',this)">Мой каталог</div>
+      <div class="utab" onclick="switchProfileTab('monitor',this)">Мониторинг</div>
+      <div class="utab" onclick="switchProfileTab('settings',this)">Профиль</div>
+    </div>
+    <div class="ubody" id="profileContent"></div>
+  </div></div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-main">
+      <div class="footer-brand">
+        <div style="display:flex;align-items:center;gap:9px">
+          <div style="width:32px;height:32px;background:var(--ore);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px">⛏</div>
+          <div style="font-family:'Oswald',sans-serif;font-size:14px;font-weight:700;color:#fff">МинингМонитор</div>
+        </div>
+        <p>ИС мониторинга горных машин. Разработана в КГТУ им. И. Раззакова, 2026.</p>
+      </div>
+      <div class="footer-col"><h4>Разделы</h4><ul>
+        <li onclick="showPage('home')">Главная</li>
+        <li onclick="showPage('catalog')">Каталог техники</li>
+        <li onclick="showPage('monitoring')">Мониторинг</li>
+        <li onclick="showPage('articles')">Статьи</li>
+      </ul></div>
+      <div class="footer-col"><h4>Техника</h4><ul>
+        <li>Экскаваторы</li><li>Самосвалы</li><li>Буровые установки</li><li>Бульдозеры</li>
+      </ul></div>
+      <div class="footer-col"><h4>Контакты</h4><ul>
+        <li>📍 г. Бишкек</li><li>КГТУ им. Раззакова</li><li>📞 +996 (312) 54-32-10</li><li>📧 info@mining-monitor.kg</li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 МинингМонитор · ИСТд-1-21</span><span>КГТУ им. И. Раззакова · Кафедра ИСТ</span></div>
+  </div>
+</footer>
+
+<!-- MODAL -->
+<div class="overlay hidden" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="mhdr"><div class="mttl" id="modalTitle">Вход</div><button class="mclose" onclick="closeModal()">✕</button></div>
+    <div class="mbody">
+      <div class="mtabs">
+        <div class="mtab on" id="tabLogin" onclick="switchAuthTab('login')">Войти</div>
+        <div class="mtab" id="tabReg" onclick="switchAuthTab('register')">Регистрация</div>
+      </div>
+      <div id="authFields"></div>
+      <button class="btn-sub" onclick="doAuth()">Войти</button>
+      <div class="fnote" id="authNote"></div>
+      <div class="demo-box"><b>Демо:</b> Введите любой email и пароль. При регистрации выберите роль «Администратор» для полного доступа.</div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast hidden" id="toast"></div>
+
+</div><!-- .site -->
+
+<script>
+// ── DATA ──────────────────────────────────────────────
+const MACHINES = [
+  {id:"EX-001",name:"Экскаватор ЭКГ-8И",ico:"⛏",bg:"#e8f0e8",cat:"Экскаватор",st:"active",load:78,temp:82,fuel:65,hr:4521,prod:94,power:"630 кВт",weight:"360 т",desc:"Карьерный электрический экскаватор с ковшом 8 м³. Применяется на открытых горных работах в карьерах угля и руды.",loc:"Карьер Северный",year:2018,badge:"В работе"},
+  {id:"DT-002",name:"Самосвал БелАЗ-75131",ico:"🚛",bg:"#e8eaf0",cat:"Самосвал",st:"active",load:91,temp:79,fuel:48,hr:3102,prod:88,power:"1715 кВт",weight:"130 т",desc:"Карьерный самосвал грузоподъёмностью 130 т для транспортировки горной массы.",loc:"Карьер Южный",year:2019,badge:"В работе"},
+  {id:"DR-003",name:"Буровая СБШ-250",ico:"🔩",bg:"#ede8e8",cat:"Буровая",st:"warning",load:55,temp:96,fuel:72,hr:2841,prod:61,power:"500 кВт",weight:"75 т",desc:"Самоходный буровой станок для взрывного бурения скважин диаметром 250 мм.",loc:"Участок Б-3",year:2017,badge:"ТО"},
+  {id:"DT-004",name:"Самосвал БелАЗ-75306",ico:"🚛",bg:"#e8eaf0",cat:"Самосвал",st:"active",load:83,temp:74,fuel:81,hr:1990,prod:91,power:"895 кВт",weight:"90 т",desc:"Карьерный самосвал грузоподъёмностью 90 т с механической трансмиссией.",loc:"Карьер Северный",year:2020,badge:"В работе"},
+  {id:"BL-005",name:"Бульдозер Т-500",ico:"🏗",bg:"#f0f0e8",cat:"Бульдозер",st:"offline",load:0,temp:22,fuel:95,hr:5234,prod:0,power:"368 кВт",weight:"51 т",desc:"Тяжёлый промышленный бульдозер для горно-строительных и рекультивационных работ.",loc:"Ремонтная зона",year:2016,badge:"ТО плановое"},
+  {id:"CR-006",name:"Кран горный ГК-50",ico:"🏗",bg:"#ede8e8",cat:"Кран",st:"danger",load:44,temp:112,fuel:33,hr:6102,prod:42,power:"280 кВт",weight:"95 т",desc:"Специализированный горный кран грузоподъёмностью 50 т для монтажных работ.",loc:"Участок А-1",year:2014,badge:"Аварийный"},
+];
+
+const ALERTS = [
+  {type:"crit",ico:"🔴",machine:"CR-006",msg:"Критическая температура: 112°C (лимит 90°C)",time:"14:32",cat:"Температура"},
+  {type:"crit",ico:"🔴",machine:"CR-006",msg:"Аварийный уровень вибрации: 6.2 мм/с",time:"14:28",cat:"Вибрация"},
+  {type:"warn",ico:"🟡",machine:"DR-003",msg:"Повышенная температура: 96°C — рекомендовано ТО",time:"13:15",cat:"Температура"},
+  {type:"warn",ico:"🟡",machine:"DR-003",msg:"Вибрация выше нормы: 4.7 мм/с",time:"12:50",cat:"Вибрация"},
+  {type:"info",ico:"🔵",machine:"DT-002",msg:"Низкий уровень топлива: 48%",time:"11:20",cat:"Топливо"},
+  {type:"info",ico:"🔵",machine:"BL-005",msg:"Машина переведена в плановое ТО",time:"09:00",cat:"Статус"},
+];
+
+const ARTICLES = [
+  {ico:"⛏",bg:"#e8f0e8",cat:"Технологии",title:"Системы мониторинга горного оборудования: принципы работы",desc:"Обзор современных IoT-систем мониторинга для карьерной техники и аналитики в реальном времени.",date:"10 июня 2026",read:"8 мин"},
+  {ico:"🚛",bg:"#e8eaf0",cat:"Техника",title:"БелАЗ нового поколения: электрические самосвалы будущего",desc:"Сравнительный анализ дизельных и электрических карьерных самосвалов.",date:"5 июня 2026",read:"6 мин"},
+  {ico:"📊",bg:"#f0ede8",cat:"Аналитика",title:"Предиктивная аналитика: как ИИ предсказывает поломки машин",desc:"Применение машинного обучения для прогнозирования технических отказов.",date:"1 июня 2026",read:"10 мин"},
+  {ico:"🔩",bg:"#ede8e8",cat:"ТО",title:"Регламентное обслуживание буровых установок: чек-лист",desc:"Практическое руководство по ТО станков вращательного бурения.",date:"28 мая 2026",read:"7 мин"},
+  {ico:"🌿",bg:"#e8f0e8",cat:"Экология",title:"Экологический мониторинг карьеров: пылеподавление",desc:"Современные технологии снижения экологического воздействия горных работ.",date:"24 мая 2026",read:"9 мин"},
+  {ico:"⚡",bg:"#f0f0e8",cat:"Энергетика",title:"Оптимизация энергопотребления горных предприятий",desc:"Методы снижения энергозатрат при добыче полезных ископаемых.",date:"20 мая 2026",read:"11 мин"},
+];
+
+// ── STATE ──────────────────────────────────────────────
+let machines = [...MACHINES];
+let users = [
+  {n:"Алмазбек Сулайманкул",email:"admin@mining.kg",role:"admin",on:true,last:"Сейчас"},
+  {n:"Иванов Алексей",email:"ivanov@mining.kg",role:"client",on:true,last:"10:12"},
+  {n:"Петров Сергей",email:"petrov@mining.kg",role:"client",on:false,last:"Вчера"},
+];
+let currentUser = null;
+let currentAuthTab = 'login';
+let currentAdminTab = 'machines';
+let currentProfileTab = 'catalog';
+let catFilter = 'Все';
+let thresholds = {temp:'90',vib:'3.5',fuel:'20'};
+
+// ── HELPERS ─────────────────────────────────────────────
+const SB = {active:'badge ba',warning:'badge bw',danger:'badge bd',offline:'badge bo'};
+const SL = {active:'В работе',warning:'Внимание',danger:'Критично',offline:'Откл.'};
+const SC = {active:'sta',warning:'stw',danger:'std',offline:'sto'};
+
+function notify(msg, type='ok') {
+  const t = document.getElementById('toast');
+  t.className = 'toast ' + (type==='err'?'ter':'tok');
+  t.textContent = (type==='err'?'✕ ':'✓ ') + msg;
+  t.classList.remove('hidden');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(()=>t.classList.add('hidden'), 3000);
+}
+
+function badgeHtml(st) {
+  return `<span class="${SB[st]}">${SL[st]}</span>`;
+}
+
+function progHtml(val, cls) {
+  return `<div class="pg-wrap"><div class="pg-fill ${cls}" style="width:${Math.min(val,100)}%"></div></div>`;
+}
+
+function tempColor(t) {
+  return t>100?'#c0392b':t>85?'#b8860b':'#2d6a2d';
+}
+
+// ── NAVIGATION ─────────────────────────────────────────
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav a').forEach(a=>{
+    a.classList.toggle('on', a.dataset.page===id);
+  });
+  window.scrollTo(0,0);
+  if(id==='monitoring') renderMonitoring();
+  if(id==='catalog') renderCatalog();
+  if(id==='alerts') renderAlerts();
+  if(id==='admin') renderAdmin();
+  if(id==='profile') renderProfile();
+  if(id==='about') renderAbout();
+  if(id==='articles') document.getElementById('allArticles').innerHTML = articlesHtml(ARTICLES);
+}
+
+// ── MACHINE CARD HTML ───────────────────────────────────
+function machineCardHtml(m, onclick='') {
+  return `
+  <div class="mc" onclick="${onclick}">
+    <div class="mc-img" style="background:${m.bg}">
+      <span style="font-size:62px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.15));position:relative;z-index:1">${m.ico}</span>
+      <div class="mc-bdg">${m.badge}</div>
+    </div>
+    <div class="mc-body">
+      <div class="mc-type">${m.cat}</div>
+      <div class="mc-name">${m.name}</div>
+      <div class="mc-desc">${m.desc}</div>
+      <div class="mc-specs">
+        <div><div class="mc-sl">Мощность</div><div class="mc-sv">${m.power}</div></div>
+        <div><div class="mc-sl">Масса</div><div class="mc-sv">${m.weight}</div></div>
+        <div><div class="mc-sl">Моточасы</div><div class="mc-sv">${m.hr.toLocaleString()}</div></div>
+        <div><div class="mc-sl">КПД</div><div class="mc-sv">${m.prod}%</div></div>
+      </div>
+      <div class="mc-footer">
+        <div class="mc-st ${SC[m.st]}">${SL[m.st]}</div>
+        <button class="btn-det" onclick="event.stopPropagation();showMachineDetail('${m.id}')">Подробнее</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function articlesHtml(arr) {
+  return arr.map(a=>`
+  <div class="art" onclick="notify('Открываю: ${a.title.substring(0,30)}...')">
+    <div class="art-img" style="background:${a.bg}"><span>${a.ico}</span></div>
+    <div class="art-body">
+      <div class="art-cat">${a.cat}</div>
+      <div class="art-title">${a.title}</div>
+      <div class="art-desc">${a.desc}</div>
+      <div class="art-meta"><span>${a.date}</span><span>${a.read} чтения</span></div>
+    </div>
+  </div>`).join('');
+}
+
+// ── HOME ────────────────────────────────────────────────
+function renderHome() {
+  document.getElementById('homeCatalog').innerHTML = machines.slice(0,3).map(m=>machineCardHtml(m,`showMachineFromHome('${m.id}')`)).join('');
+  document.getElementById('homeArticles').innerHTML = articlesHtml(ARTICLES.slice(0,3));
+}
+
+function showMachineFromHome(id) {
+  showPage('catalog');
+  setTimeout(()=>showMachineDetail(id), 50);
+}
+
+// ── CATALOG ─────────────────────────────────────────────
+function renderCatalog() {
+  const cats = ['Все', ...new Set(MACHINES.map(m=>m.cat))];
+  document.getElementById('catFilters').innerHTML = cats.map(c=>`
+    <button onclick="setCatFilter('${c}')" style="padding:5px 13px;background:${catFilter===c?'var(--ore)':'#fff'};border:1.5px solid ${catFilter===c?'var(--ore)':'var(--dust3)'};color:${catFilter===c?'#fff':'var(--textm)'};font-size:12px;font-weight:600;border-radius:20px;cursor:pointer;transition:all .15s">${c}</button>
+  `).join('');
+  const filtered = catFilter==='Все' ? machines : machines.filter(m=>m.cat===catFilter);
+  document.getElementById('catalogGrid').innerHTML = filtered.map(m=>machineCardHtml(m,`showMachineDetail('${m.id}')`)).join('');
+}
+
+function setCatFilter(f) {
+  catFilter = f;
+  renderCatalog();
+}
+
+function showMachineDetail(id) {
+  const m = machines.find(x=>x.id===id);
+  if(!m) return;
+  document.getElementById('catalogMain').classList.add('hidden');
+  document.getElementById('catalogDetail').classList.remove('hidden');
+  const warn = m.st==='danger' ? `<div style="padding:9px 12px;background:#fffbeb;border:1px solid #fde68a;border-radius:7px;font-size:12px;color:#92400e;margin-bottom:12px">⚠ Критическая температура ${m.temp}°C. Требуется немедленное ТО.</div>` : m.st==='warning' ? `<div style="padding:9px 12px;background:#fffbeb;border:1px solid #fde68a;border-radius:7px;font-size:12px;color:#92400e;margin-bottom:12px">⚠ Повышенная температура ${m.temp}°C. Рекомендуется диагностика.</div>` : '';
+  document.getElementById('detailContent').innerHTML = `
+  <div class="g2">
+    <div class="cw">
+      <div style="height:170px;display:flex;align-items:center;justify-content:center;background:${m.bg};border-radius:8px;margin-bottom:12px;font-size:70px">${m.ico}</div>
+      <div style="font-size:9px;color:var(--ore);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">${m.cat}</div>
+      <div style="font-family:'Oswald',sans-serif;font-size:20px;font-weight:700;margin-bottom:6px">${m.name}</div>
+      <div style="font-size:13px;color:var(--textl);line-height:1.6;margin-bottom:12px">${m.desc}</div>
+      <div style="background:var(--dust);border-radius:7px;padding:11px">
+        ${[['Локация',m.loc],['Год ввода',m.year],['Моточасы',m.hr.toLocaleString()+' ч'],['КПД',m.prod+'%'],['Мощность',m.power],['Масса',m.weight]].map(([l,v])=>`
+          <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--dust3);font-size:12px">
+            <span style="color:var(--textl)">${l}</span><span style="font-weight:700;font-family:'Roboto Mono',monospace;font-size:11px">${v}</span>
+          </div>`).join('')}
+      </div>
+    </div>
+    <div>
+      <div class="cw" style="margin-bottom:12px">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:11px">Параметры в реальном времени</div>
+        ${[['Нагрузка',m.load,'%',m.load>80?'po':m.load>50?'pgr':'py'],['Температура',m.temp,'°C',m.temp>100?'pr':m.temp>85?'py':'pgr'],['Топливо',m.fuel,'%',m.fuel<30?'pr':m.fuel<60?'py':'pgr'],['КПД',m.prod,'%',m.prod>80?'pgr':m.prod>50?'py':'pr']].map(([l,v,u,cls])=>`
+          <div style="margin-bottom:10px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:12px">
+              <span style="color:var(--textm)">${l}</span><span style="font-family:'Roboto Mono',monospace;font-weight:700">${v}${u}</span>
+            </div>
+            <div style="height:6px;background:var(--dust2);border-radius:3px;overflow:hidden"><div class="pg-fill ${cls}" style="width:${Math.min(v,100)}%;height:100%;border-radius:3px"></div></div>
+          </div>`).join('')}
+      </div>
+      ${warn}
+      <div class="cw">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:11px">История нагрузки (6 мес.)</div>
+        ${svgLineChart([72,78,74,81,83,m.prod],'#d4500a',['Янв','Фев','Мар','Апр','Май','Июн'])}
+      </div>
+    </div>
+  </div>`;
+}
+
+function hideMachineDetail() {
+  document.getElementById('catalogMain').classList.remove('hidden');
+  document.getElementById('catalogDetail').classList.add('hidden');
+}
+
+// ── SVG CHARTS ──────────────────────────────────────────
+function svgLineChart(data, color, labels) {
+  const w=560, h=130, pad=30, bh=h-pad*1.5;
+  const max=Math.max(...data,100), min=Math.min(...data,0)*0.9;
+  const pts = data.map((v,i)=>{
+    const x = pad + i*(w-pad*2)/(data.length-1);
+    const y = pad + (1-(v-min)/(max-min))*bh;
+    return [x,y];
+  });
+  const polyline = pts.map(p=>p.join(',')).join(' ');
+  const area = `${pts[0][0]},${h-10} ${polyline} ${pts[pts.length-1][0]},${h-10}`;
+  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:130px">
+    <defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${color}" stop-opacity="0.2"/><stop offset="100%" stop-color="${color}" stop-opacity="0.02"/></linearGradient></defs>
+    <polygon points="${area}" fill="url(#g1)"/>
+    <polyline points="${polyline}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+    ${pts.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="${color}"/>`).join('')}
+    ${labels.map((l,i)=>{const x=pad+i*(w-pad*2)/(labels.length-1);return `<text x="${x}" y="${h-2}" text-anchor="middle" font-size="11" fill="#aaa" font-family="Source Sans 3,sans-serif">${l}</text>`}).join('')}
+    <line x1="${pad}" y1="${pad}" x2="${pad}" y2="${h-14}" stroke="#e2e0da" stroke-width="1"/>
+    <line x1="${pad}" y1="${h-14}" x2="${w-pad}" y2="${h-14}" stroke="#e2e0da" stroke-width="1"/>
+  </svg>`;
+}
+
+function svgBarChart(data, colors, labels) {
+  const w=540, h=140, pad=30, bh=h-pad*1.5;
+  const max=Math.max(...data)*1.1||100;
+  const bw = (w-pad*2)/data.length*0.6;
+  const gap = (w-pad*2)/data.length;
+  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:140px">
+    ${data.map((v,i)=>{
+      const x=pad+i*gap+(gap-bw)/2, bh2=((v/max)*(h-pad*1.5)), y=h-14-bh2;
+      return `<rect x="${x}" y="${y}" width="${bw}" height="${bh2}" rx="3" fill="${colors[i]||'#d4500a'}"/>
+      <text x="${x+bw/2}" y="${h-1}" text-anchor="middle" font-size="10" fill="#aaa" font-family="Source Sans 3,sans-serif">${labels[i]||''}</text>
+      <text x="${x+bw/2}" y="${y-3}" text-anchor="middle" font-size="10" fill="#666" font-family="Roboto Mono,monospace">${v}</text>`;
+    }).join('')}
+    <line x1="${pad}" y1="${h-14}" x2="${w-pad}" y2="${h-14}" stroke="#e2e0da" stroke-width="1"/>
+  </svg>`;
+}
+
+// ── MONITORING ──────────────────────────────────────────
+function renderMonitoring() {
+  const actC = machines.filter(m=>m.st==='active').length;
+  const wrnC = machines.filter(m=>m.st==='warning'||m.st==='danger').length;
+  const avgP = Math.round(machines.filter(m=>m.st!=='offline').reduce((s,m)=>s+m.prod,0)/Math.max(machines.filter(m=>m.st!=='offline').length,1));
+
+  document.getElementById('monKpis').innerHTML = [
+    {l:'Активных машин',v:actC,s:`из ${machines.length} в парке`,c:'#d4500a',tr:'up'},
+    {l:'Требуют внимания',v:wrnC,s:'нужна диагностика',c:'#c0392b',tr:'dn'},
+    {l:'Средний КПД',v:avgP+'%',s:'+3% за неделю',c:'#2d6a2d',tr:'up'},
+    {l:'Моточасов',v:'23 790',s:'за всё время',c:'#b8860b',tr:'up'},
+  ].map(k=>`<div class="kpi"><div class="kpi-bar" style="background:${k.c}"></div><div class="kpi-l">${k.l}</div><div class="kpi-v">${k.v}</div><div class="kpi-s"><span class="${k.tr}">${k.tr==='up'?'↑':'↓'}</span> ${k.s}</div></div>`).join('');
+
+  // Performance chart
+  const chartEl = document.getElementById('perfChart');
+  const d1=[74,78,72,82,80,94], d2=[80,85,82,88,86,91];
+  const w=600,h=160,pad=35,bh=h-pad*1.5,max=100,min=60;
+  const pts1=d1.map((v,i)=>[pad+i*(w-pad*2)/5, pad+(1-(v-min)/(max-min))*bh]);
+  const pts2=d2.map((v,i)=>[pad+i*(w-pad*2)/5, pad+(1-(v-min)/(max-min))*bh]);
+  const lbls=['Янв','Фев','Мар','Апр','Май','Июн'];
+  chartEl.innerHTML = `
+    <defs>
+      <linearGradient id="cg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#d4500a" stop-opacity=".2"/><stop offset="100%" stop-color="#d4500a" stop-opacity=".02"/></linearGradient>
+      <linearGradient id="cg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2d6a2d" stop-opacity=".15"/><stop offset="100%" stop-color="#2d6a2d" stop-opacity=".02"/></linearGradient>
+    </defs>
+    <polygon points="${pts1[0][0]},${h-10} ${pts1.map(p=>p.join(',')).join(' ')} ${pts1[5][0]},${h-10}" fill="url(#cg1)"/>
+    <polygon points="${pts2[0][0]},${h-10} ${pts2.map(p=>p.join(',')).join(' ')} ${pts2[5][0]},${h-10}" fill="url(#cg2)"/>
+    <polyline points="${pts1.map(p=>p.join(',')).join(' ')}" fill="none" stroke="#d4500a" stroke-width="2.5" stroke-linejoin="round"/>
+    <polyline points="${pts2.map(p=>p.join(',')).join(' ')}" fill="none" stroke="#2d6a2d" stroke-width="2.5" stroke-linejoin="round"/>
+    ${pts1.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="#d4500a"/>`).join('')}
+    ${pts2.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="#2d6a2d"/>`).join('')}
+    ${lbls.map((l,i)=>{const x=pad+i*(w-pad*2)/5;return `<text x="${x}" y="${h-1}" text-anchor="middle" font-size="11" fill="#aaa" font-family="Source Sans 3,sans-serif">${l}</text>`}).join('')}
+    <line x1="${pad}" y1="${h-14}" x2="${w-pad}" y2="${h-14}" stroke="#e2e0da" stroke-width="1"/>
+  `;
+
+  document.getElementById('monAlerts').innerHTML = ALERTS.slice(0,4).map(a=>`
+    <div class="ar ${a.type}">
+      <div style="font-size:14px">${a.ico}</div>
+      <div><div class="ar-t">${a.msg}</div><div class="ar-m">${a.machine} · ${a.time}</div></div>
+    </div>`).join('');
+
+  document.getElementById('monTable').innerHTML = `
+    <thead><tr>
+      <th>Машина</th><th>Статус</th><th>Нагрузка</th><th>Темп.</th><th>Топливо</th><th>КПД</th><th>Мотч.</th><th>Локация</th>
+    </tr></thead>
+    <tbody>${machines.map(m=>`
+    <tr onclick="showMachineFromHome('${m.id}')">
+      <td><div style="display:flex;align-items:center;gap:7px"><span style="font-size:18px">${m.ico}</span><span style="font-weight:700;font-size:13px">${m.name}</span></div></td>
+      <td>${badgeHtml(m.st)}</td>
+      <td><div style="display:flex;align-items:center;gap:6px">${progHtml(m.load, m.load>80?'po':m.load>50?'pgr':'py')}<span style="font-size:11px;font-family:'Roboto Mono',monospace">${m.load}%</span></div></td>
+      <td><span style="color:${tempColor(m.temp)};font-weight:700;font-family:'Roboto Mono',monospace">${m.temp}°C</span></td>
+      <td><span style="font-family:'Roboto Mono',monospace;font-size:11px">${m.fuel}%</span></td>
+      <td><span style="font-weight:700;font-family:'Roboto Mono',monospace">${m.prod}%</span></td>
+      <td style="font-size:11px;font-family:'Roboto Mono',monospace;color:var(--textl)">${m.hr.toLocaleString()}</td>
+      <td style="font-size:11px;color:var(--textl)">${m.loc}</td>
+    </tr>`).join('')}</tbody>`;
+}
+
+// ── ALERTS ──────────────────────────────────────────────
+function renderAlerts() {
+  const crit=ALERTS.filter(a=>a.type==='crit').length;
+  const warn=ALERTS.filter(a=>a.type==='warn').length;
+  const info=ALERTS.filter(a=>a.type==='info').length;
+  document.getElementById('alertKpis').innerHTML = [
+    {l:'Критических',v:crit,c:'#c0392b'},{l:'Предупреждений',v:warn,c:'#d4500a'},{l:'Информационных',v:info,c:'#3b82f6'}
+  ].map(k=>`<div class="kpi"><div class="kpi-bar" style="background:${k.c}"></div><div class="kpi-l">${k.l}</div><div class="kpi-v" style="color:${k.c}">${k.v}</div></div>`).join('');
+
+  document.getElementById('alertsList').innerHTML = '<div class="ch"><div class="ct">Все оповещения</div></div>' +
+    ALERTS.map(a=>`
+    <div class="ar ${a.type}">
+      <div style="font-size:14px;flex-shrink:0">${a.ico}</div>
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+          <div class="ar-t">${a.msg}</div>
+          <span class="badge ${a.type==='crit'?'bd':a.type==='warn'?'bw':'ba'}" style="flex-shrink:0;font-size:9px">${a.type==='crit'?'КРИТИЧНО':a.type==='warn'?'ВНИМАНИЕ':'ИНФО'}</span>
+        </div>
+        <div class="ar-m">${a.machine} · ${a.cat} · Сегодня ${a.time}</div>
+      </div>
+    </div>`).join('');
+}
+
+// ── ADMIN ───────────────────────────────────────────────
+function renderAdmin() {
+  document.getElementById('adminKpis').innerHTML = [
+    {l:'Машин в парке',v:machines.length,c:'#d4500a'},
+    {l:'Пользователей',v:users.length,c:'#2d6a2d'},
+    {l:'Критических тревог',v:machines.filter(m=>m.st==='danger').length,c:'#c0392b'},
+  ].map(k=>`<div class="adm-stat" style="border-left-color:${k.c}"><div class="adm-sl">${k.l}</div><div class="adm-sv" style="color:${k.c}">${k.v}</div></div>`).join('');
+  renderAdminTab(currentAdminTab);
+}
+
+function switchAdminTab(tab, el) {
+  currentAdminTab = tab;
+  document.querySelectorAll('#adminTabs .tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  renderAdminTab(tab);
+}
+
+function renderAdminTab(tab) {
+  const el = document.getElementById('adminContent');
+  if(tab==='machines') {
+    el.innerHTML = `<div class="g2">
+      <div class="card">
+        <div class="ch"><div class="ct">Добавить машину</div></div>
+        <div class="fgrid">
+          <div class="fg"><label class="fl">ID *</label><input class="fi" id="mfId" placeholder="EX-007"/></div>
+          <div class="fg"><label class="fl">Тип</label><select class="fs" id="mfCat">${['Экскаватор','Самосвал','Буровая','Бульдозер','Кран'].map(t=>`<option>${t}</option>`).join('')}</select></div>
+          <div class="fg ffull"><label class="fl">Название *</label><input class="fi" id="mfName" placeholder="Экскаватор ЭКГ-12И"/></div>
+          <div class="fg"><label class="fl">Статус</label><select class="fs" id="mfSt"><option value="active">Активна</option><option value="offline">Откл.</option></select></div>
+          <div class="fg"><label class="fl">Локация</label><input class="fi" id="mfLoc" placeholder="Карьер Северный"/></div>
+          <div class="fg ffull" style="display:flex;gap:8px">
+            <button class="btn-a" onclick="addMachine()">+ Добавить</button>
+            <button class="btn-ao" onclick="clearMachineForm()">Очистить</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Машины (${machines.length})</div></div>
+        <div style="max-height:320px;overflow-y:auto">
+          <table class="tbl">
+            <thead><tr><th>ID</th><th>Название</th><th>Статус</th><th></th></tr></thead>
+            <tbody>${machines.map((m,i)=>`<tr>
+              <td style="font-family:'Roboto Mono',monospace;font-size:10px;color:var(--ore)">${m.id}</td>
+              <td style="font-weight:600;font-size:12px">${m.name}</td>
+              <td>${badgeHtml(m.st)}</td>
+              <td><button class="btn-del" onclick="deleteMachine(${i})">✕</button></td>
+            </tr>`).join('')}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>`;
+  } else if(tab==='users') {
+    el.innerHTML = `<div class="g2">
+      <div class="card">
+        <div class="ch"><div class="ct">Добавить пользователя</div></div>
+        <div class="fg"><label class="fl">ФИО *</label><input class="fi" id="ufN" placeholder="Иванов Иван"/></div>
+        <div class="fg"><label class="fl">Email *</label><input class="fi" id="ufE" placeholder="user@mining.kg"/></div>
+        <div class="fg"><label class="fl">Роль</label><select class="fs" id="ufR">${['Оператор','Техник','Инженер','Администратор'].map(r=>`<option>${r}</option>`).join('')}</select></div>
+        <button class="btn-a" onclick="addUser()">+ Добавить пользователя</button>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Пользователи (${users.length})</div></div>
+        <table class="tbl">
+          <thead><tr><th>Пользователь</th><th>Роль</th><th>Статус</th><th></th></tr></thead>
+          <tbody>${users.map((u,i)=>`<tr>
+            <td><div style="font-weight:600;font-size:12px">${u.n}</div><div style="font-size:10px;color:var(--textl)">${u.email}</div></td>
+            <td><span style="font-size:10px;background:#eff6ff;color:#1d4ed8;padding:2px 6px;border-radius:3px;font-weight:700">${u.role}</span></td>
+            <td><span style="font-size:10px;color:${u.on?'#38a038':'var(--textl)'};font-weight:700">● ${u.on?'Онлайн':'Офлайн'}</span></td>
+            <td><button class="btn-del" onclick="deleteUser(${i})">✕</button></td>
+          </tr>`).join('')}</tbody>
+        </table>
+      </div>
+    </div>`;
+  } else if(tab==='thresh') {
+    el.innerHTML = `<div class="g2">
+      <div class="card">
+        <div class="ch"><div class="ct">Пороговые значения датчиков</div></div>
+        <div style="padding:8px 11px;background:#fffbeb;border:1px solid #fde68a;border-radius:7px;font-size:12px;color:#92400e;margin-bottom:13px">⚠ При превышении этих значений система создаёт оповещение</div>
+        <div class="fg"><label class="fl">Макс. температура (°C)</label><input class="fi" id="thrTemp" type="number" value="${thresholds.temp}"/></div>
+        <div class="fg"><label class="fl">Макс. вибрация (мм/с)</label><input class="fi" id="thrVib" type="number" value="${thresholds.vib}"/></div>
+        <div class="fg"><label class="fl">Мин. уровень топлива (%)</label><input class="fi" id="thrFuel" type="number" value="${thresholds.fuel}"/></div>
+        <button class="btn-a" onclick="saveThresholds()">💾 Сохранить</button>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Текущие пороги</div></div>
+        ${[['🌡 Температура',`> ${thresholds.temp}°C`,'#c0392b'],['📳 Вибрация',`> ${thresholds.vib} мм/с`,'#d4500a'],['⛽ Топливо',`< ${thresholds.fuel}%`,'#b8860b']].map(([l,v,c])=>`
+          <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--dust2);font-size:13px">
+            <span>${l}</span><span style="font-family:'Roboto Mono',monospace;font-weight:800;color:${c}">${v}</span>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  } else if(tab==='system') {
+    el.innerHTML = `<div class="g2">
+      <div class="card">
+        <div class="ch"><div class="ct">Информация о системе</div></div>
+        ${[['Система','МинингМонитор v2.1'],['Разработчик','Сулайманкул Алмазбек'],['Организация','КГТУ им. И. Раззакова'],['Кафедра','ИСТ им. акад. А. Жайнакова'],['Стек','React.js / HTML / CSS'],['Машин',machines.length],['Пользователей',users.length]].map(([l,v])=>`
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--dust2);font-size:12px">
+            <span style="color:var(--textl)">${l}</span><span style="font-weight:700;font-size:11px">${v}</span>
+          </div>`).join('')}
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="card">
+          <div class="ch"><div class="ct">Действия</div></div>
+          ${[['📊 Экспорт данных','Скачать базу в CSV'],['🔄 Сбросить кэш','Очистить временные данные'],['📧 Тест уведомлений','Отправить тест'],['🔒 Журнал доступа','Просмотр логов']].map(([l,d])=>`
+            <button class="btn-ao" style="width:100%;text-align:left;margin-bottom:7px;padding:8px 11px" onclick="notify('${l} — выполнено')">
+              <div style="font-weight:700;font-size:12px">${l}</div>
+              <div style="font-size:10px;color:var(--textl);margin-top:1px">${d}</div>
+            </button>`).join('')}
+        </div>
+        <div class="card" style="border-color:#fecaca">
+          <div class="ch"><div class="ct" style="color:#c0392b">⚠ Опасная зона</div></div>
+          <button class="btn-a" style="width:100%;background:#c0392b" onclick="notify('Требуется подтверждение','err')">🗑 Сбросить все данные</button>
+        </div>
+      </div>
+    </div>`;
+  }
+}
+
+function addMachine() {
+  const id = document.getElementById('mfId').value.trim();
+  const name = document.getElementById('mfName').value.trim();
+  if(!id||!name){notify('Заполните ID и название','err');return;}
+  if(machines.find(m=>m.id===id)){notify('ID уже существует','err');return;}
+  const cat = document.getElementById('mfCat').value;
+  const st = document.getElementById('mfSt').value;
+  const loc = document.getElementById('mfLoc').value.trim();
+  machines.push({id,name,ico:'⚙',bg:'#f0f0f0',cat,st,load:0,temp:25,fuel:100,hr:0,prod:0,power:'—',weight:'—',desc:'Новая машина в системе.',loc:loc||'Не указано',year:2026,badge:'В работе'});
+  clearMachineForm();
+  renderAdmin();
+  notify('✓ Машина добавлена в систему');
+}
+
+function clearMachineForm() {
+  ['mfId','mfName','mfLoc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+}
+
+function deleteMachine(i) {
+  machines.splice(i,1);
+  renderAdmin();
+  notify('Машина удалена');
+}
+
+function addUser() {
+  const n=document.getElementById('ufN').value.trim();
+  const e=document.getElementById('ufE').value.trim();
+  if(!n||!e){notify('Заполните поля','err');return;}
+  const r=document.getElementById('ufR').value;
+  users.push({n,email:e,role:r,on:false,last:'Только что'});
+  renderAdmin();
+  notify('✓ Пользователь добавлен');
+}
+
+function deleteUser(i) {
+  users.splice(i,1);
+  renderAdmin();
+  notify('Пользователь удалён');
+}
+
+function saveThresholds() {
+  thresholds.temp = document.getElementById('thrTemp').value;
+  thresholds.vib = document.getElementById('thrVib').value;
+  thresholds.fuel = document.getElementById('thrFuel').value;
+  notify('✓ Настройки сохранены');
+}
+
+// ── ABOUT ───────────────────────────────────────────────
+function renderAbout() {
+  document.getElementById('techStack').innerHTML = [
+    ['Frontend','React.js 18 / HTML5'],['Язык','JavaScript ES6+'],
+    ['Визуализация','SVG Charts / CSS3'],['Шрифты','Oswald, Source Sans 3'],
+    ['СУБД','PostgreSQL 15'],['Backend','Node.js + Express']
+  ].map(([l,v])=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--dust2);font-size:12px"><span style="color:var(--textl)">${l}</span><span style="font-weight:700">${v}</span></div>`).join('');
+
+  document.getElementById('funcList').innerHTML = ['Каталог горных машин','Мониторинг в реальном времени','Графики производительности','Система оповещений','Панель администратора','Регистрация и авторизация','Экспорт отчётов','Адаптивный дизайн'].map(f=>`
+    <div style="display:flex;align-items:center;gap:7px;padding:4px 0;font-size:12px;color:var(--textm)">
+      <span style="color:var(--ore);font-weight:700">✓</span>${f}
+    </div>`).join('');
+
+  document.getElementById('devInfo').innerHTML = [
+    ['Разработчик','Сулайманкул Алмазбек Балбакович'],['Группа','ИСТд-1-21, 5 курс, заочная'],
+    ['Руководитель','ст. преп. Бакиева Ж.З.'],['Кафедра','ИСТ им. акад. А. Жайнакова'],
+    ['Институт','ИЭТ, КГТУ им. И. Раззакова'],['Год защиты','2026']
+  ].map(([l,v])=>`<div style="background:var(--dust);border-radius:7px;padding:9px 11px"><div style="font-size:9px;color:var(--textl);text-transform:uppercase;letter-spacing:.8px;margin-bottom:2px">${l}</div><div style="font-size:12px;font-weight:700">${v}</div></div>`).join('');
+}
+
+// ── PROFILE ─────────────────────────────────────────────
+function renderProfile() {
+  if(!currentUser){showPage('home');return;}
+  document.getElementById('profileAva').textContent = currentUser.name[0].toUpperCase();
+  document.getElementById('profileName').textContent = currentUser.name;
+  document.getElementById('profileRole').textContent = currentUser.role==='admin'?'Администратор':'Клиент';
+  renderProfileTab(currentProfileTab);
+}
+
+function switchProfileTab(tab, el) {
+  currentProfileTab = tab;
+  document.querySelectorAll('.utab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  renderProfileTab(tab);
+}
+
+function renderProfileTab(tab) {
+  const el = document.getElementById('profileContent');
+  if(tab==='catalog') {
+    el.innerHTML = `<div style="padding:9px 11px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:7px;font-size:12px;color:#15803d;margin-bottom:13px">✓ Добро пожаловать, ${currentUser.name}!</div>
+    <div class="cat-grid">${machines.slice(0,3).map(m=>machineCardHtml(m,`showMachineFromHome('${m.id}')`)).join('')}</div>`;
+  } else if(tab==='monitor') {
+    el.innerHTML = `<table class="tbl"><thead><tr><th>Машина</th><th>Статус</th><th>КПД</th><th>Темп.</th></tr></thead>
+    <tbody>${machines.map(m=>`<tr><td style="font-weight:600">${m.name}</td><td>${badgeHtml(m.st)}</td><td style="font-family:'Roboto Mono',monospace;font-size:12px">${m.prod}%</td><td><span style="color:${tempColor(m.temp)};font-weight:700">${m.temp}°C</span></td></tr>`).join('')}</tbody></table>`;
+  } else {
+    el.innerHTML = `<div style="max-width:370px">
+      <div class="fg"><label class="fl">Имя</label><input class="fi" value="${currentUser.name}"/></div>
+      <div class="fg"><label class="fl">Email</label><input class="fi" value="${currentUser.email}"/></div>
+      <div class="fg"><label class="fl">Роль</label><input class="fi" value="${currentUser.role==='admin'?'Администратор':'Клиент'}" readonly style="background:var(--dust)"/></div>
+      <button class="btn-a" onclick="notify('Сохранено')">💾 Сохранить</button>
+    </div>`;
+  }
+}
+
+// ── AUTH ────────────────────────────────────────────────
+function openModal(mode) {
+  currentAuthTab = mode;
+  document.getElementById('modal').classList.remove('hidden');
+  renderAuthFields();
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.add('hidden');
+}
+
+function switchAuthTab(tab) {
+  currentAuthTab = tab;
+  document.getElementById('tabLogin').classList.toggle('on', tab==='login');
+  document.getElementById('tabReg').classList.toggle('on', tab==='register');
+  document.getElementById('modalTitle').textContent = tab==='login'?'Вход в систему':'Регистрация';
+  document.querySelector('#modal .btn-sub').textContent = tab==='login'?'Войти':'Создать аккаунт';
+  renderAuthFields();
+}
+
+function renderAuthFields() {
+  const isReg = currentAuthTab==='register';
+  document.getElementById('authFields').innerHTML = `
+    ${isReg?`<div class="fg"><label class="fl">Ваше имя</label><input class="fi" id="afName" placeholder="Иван Иванов"/></div>`:''}
+    <div class="fg"><label class="fl">Email</label><input class="fi" id="afEmail" type="email" placeholder="email@example.com"/></div>
+    <div class="fg"><label class="fl">Пароль</label><input class="fi" id="afPass" type="password" placeholder="••••••••"/></div>
+    ${isReg?`<div class="fg"><label class="fl">Тип аккаунта</label><select class="fs" id="afRole"><option value="client">Клиент (просмотр)</option><option value="admin">Администратор (полный доступ)</option></select></div>`:''}
+  `;
+  document.getElementById('authNote').innerHTML = isReg
+    ? 'Уже есть аккаунт? <a onclick="switchAuthTab(\'login\')">Войдите</a>'
+    : 'Нет аккаунта? <a onclick="switchAuthTab(\'register\')">Зарегистрируйтесь</a>';
+}
+
+function doAuth() {
+  const email = document.getElementById('afEmail').value.trim();
+  const pass = document.getElementById('afPass').value;
+  if(!email||!pass){notify('Заполните поля','err');return;}
+  const name = currentAuthTab==='register' ? (document.getElementById('afName').value.trim()||email.split('@')[0]) : email.split('@')[0];
+  const role = currentAuthTab==='register' ? (document.getElementById('afRole')?.value||'client') : 'client';
+  currentUser = {name, email, role};
+  closeModal();
+  // Update header
+  document.getElementById('hactions').innerHTML = `
+    <div class="user-chip">
+      <div class="user-ava" onclick="showPage('profile')">${name[0].toUpperCase()}</div>
+      <span class="user-nm">${name.split(' ')[0]}</span>
+      <button class="btn-login" onclick="logout()">Выйти</button>
+    </div>`;
+  // Show admin link if admin
+  const adminLink = document.getElementById('adminLink');
+  if(role==='admin') adminLink.classList.remove('hidden');
+  else adminLink.classList.add('hidden');
+  notify(`✓ Добро пожаловать, ${name}!`);
+}
+
+function logout() {
+  currentUser = null;
+  document.getElementById('hactions').innerHTML = `
+    <button class="btn-login" onclick="openModal('login')">Войти</button>
+    <button class="btn-reg" onclick="openModal('register')">Регистрация</button>`;
+  document.getElementById('adminLink').classList.add('hidden');
+  showPage('home');
+  notify('Вы вышли из системы');
+}
+
+// ── INIT ────────────────────────────────────────────────
+window.onload = function() {
+  renderHome();
+  // Update clock
+  setInterval(()=>{
+    const now = new Date();
+    document.title = `МинингМонитор — ${now.toLocaleTimeString('ru-RU')}`;
+  }, 1000);
+};
+</script>
+</body>
+</html>
